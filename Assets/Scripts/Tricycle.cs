@@ -34,14 +34,9 @@ public class Tricycle : MonoBehaviour
 
     void Update() {
 
-        if (characterController.isGrounded) {
-            isGrounded = true;
-        }
-        else {
-            isGrounded = false;
-        }
+        isGrounded = characterController.isGrounded;
         
-        if (isGrounded) {
+        if (isGrounded && canMove) {
 
 //            moveDirection.y = -0.1f;
 
@@ -59,7 +54,6 @@ public class Tricycle : MonoBehaviour
 
         moveDirection.y -= gravity * Time.deltaTime;
         
-
         // Player and Camera rotation
         if (canMove) {
 
@@ -79,29 +73,16 @@ public class Tricycle : MonoBehaviour
                 transform.eulerAngles = new Vector2(0, transform.eulerAngles.y + (curTurn * turnSpeedScalar * Time.deltaTime));
             }
         }
-
-       
-
-
-    
-
-
-        /*
-        // Mouse look based turning.
-        rotation.y += Input.GetAxis("Mouse X") * lookSpeed;
-        rotation.x += -Input.GetAxis("Mouse Y") * lookSpeed;
-        rotation.x = Mathf.Clamp(rotation.x, -lookXLimit, lookXLimit);
-        playerCameraParent.localRotation = Quaternion.Euler(rotation.x, 0, 0);
-        transform.eulerAngles = new Vector2(0, rotation.y);
-        */
     }
 
     private void FixedUpdate() {
 
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
+    }
 
-
+    public void SetCanMove(bool canMove) {
+        this.canMove = canMove;
     }
 
 }

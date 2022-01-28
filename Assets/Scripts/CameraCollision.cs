@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class TPCamera : MonoBehaviour
-{
+public class CameraCollision : MonoBehaviour {
     public Transform referenceTransform;
     public float collisionOffset = 0.3f; //To prevent Camera from clipping through Objects
     public float cameraSpeed = 15f; //How fast the Camera should snap into position if there are no obstacles
@@ -13,8 +10,6 @@ public class TPCamera : MonoBehaviour
     Transform parentTransform;
     float defaultDistance;
 
-    Vector3 targetPos;
-
     // Start is called before the first frame update
     void Start() {
         defaultPos = transform.localPosition;
@@ -23,25 +18,22 @@ public class TPCamera : MonoBehaviour
         defaultDistance = Vector3.Distance(defaultPos, Vector3.zero);
 
         //Lock cursor
-     //   Cursor.lockState = CursorLockMode.Locked;
-       // Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // LateUpdate is called after Update
     void LateUpdate() {
         Vector3 currentPos = defaultPos;
         RaycastHit hit;
-        Vector3 dirTmp = /*parentTransform.TransformPoint(defaultPos)*/ /*referenceTransform.parent.TransformPoint(defaultPos)*/transform.position - referenceTransform.position;
+        Vector3 dirTmp = parentTransform.TransformPoint(defaultPos) - referenceTransform.position;
         if (Physics.SphereCast(referenceTransform.position, collisionOffset, dirTmp, out hit, defaultDistance)) {
             currentPos = (directionNormalized * (hit.distance - collisionOffset));
 
-            transform.position = currentPos;
-            //transform.localPosition = currentPos;
+            transform.localPosition = currentPos;
         }
         else {
-
-            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * cameraSpeed);
-            //transform.localPosition = Vector3.Lerp(transform.localPosition, currentPos, Time.deltaTime * cameraSpeed);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, currentPos, Time.deltaTime * cameraSpeed);
         }
     }
 }
