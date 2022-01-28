@@ -23,9 +23,7 @@ public class Tricycle : MonoBehaviour
     float curTurn = 0.0f;
 
     [HideInInspector]
-    public bool canMove = true;
-
-    int frameCount = 0;
+    public bool canMove = false;
 
     void Start() {
         characterController = GetComponent<CharacterController>();
@@ -73,12 +71,15 @@ public class Tricycle : MonoBehaviour
                 transform.eulerAngles = new Vector2(0, transform.eulerAngles.y + (curTurn * turnSpeedScalar * Time.deltaTime));
             }
         }
+
+        // Move the controller
+        characterController.Move(moveDirection * Time.deltaTime);
     }
 
     private void FixedUpdate() {
 
         // Move the controller
-        characterController.Move(moveDirection * Time.deltaTime);
+      //  characterController.Move(moveDirection * Time.deltaTime);
     }
 
     public void SetCanMove(bool canMove) {
