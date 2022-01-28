@@ -54,25 +54,74 @@ public class CoverManager : MonoBehaviour
         return coverPoints[id];
     }
 
+    CoverPoint FindCoverPoint(Vector3 startPos, Vector3 searchDir) {
+
+        RaycastHit hit;
+
+        Vector3 p1 = startPos;
+        float distToNext = 0;
+
+        // Building is 20 meters wide, 32 with sidewalks. 18 meters between cover points. 
+        if (Physics.SphereCast(p1, 1.0f, searchDir, out hit, 20)) {
+            distToNext = hit.distance;
+
+            CoverPoint nextPoint = hit.transform.GetComponent<CoverPoint>();
+
+            return nextPoint;
+        }
+
+        return null;
+    }
+
     public CoverPoint FindNearLeftCover(CoverPoint startPoint) {
 
         // Find cover point due left.
         // If none, find cover point due back. (going around corner)
 
-        // Some cheap hack just to get movement tests in quick. To a geometric search instead.
+        Vector3 searchDir;
 
-        // Cover points are wrapped around each building in clockwise order while facing the building. + index should be clockwise
-        // IF the FindObjectsOfType iterates the hierarchy in the obvious manner.
+        // If startPoint is wall
+        if (startPoint.coverType == CoverPoint.CoverType.WALL) {
+            // Get this point's X vec.
+            searchDir = -startPoint.transform.right;
+        }
 
-        int id = (startPoint.id + 1) % (coverPoints.Length);
+        // If startPoint is corner 
+        else if (startPoint.coverType == CoverPoint.CoverType.CORNER) {
+            // Get this point's Z vec.
+            searchDir = startPoint.transform.forward;
+        }
 
-        return coverPoints[id];
+        else {
+            throw new System.Exception("Cover point has no type.");
+        }
+
+        return FindCoverPoint(startPoint.transform.position, searchDir);
     }
 
     public CoverPoint FindNearRightCover(CoverPoint startPoint) {
 
-        int id = (startPoint.id - 1) % (coverPoints.Length);
+        // Find cover point due right.
+        // If none, find cover point due back. (going around corner)
 
-        return coverPoints[id];
+        Vector3 searchDir;
+
+        // If startPoint is wall
+        if (startPoint.coverType == CoverPoint.CoverType.WALL) {
+            // Get this point's X vec.
+            searchDir = startPoint.transform.right;
+        }
+
+        // If startPoint is corner 
+        else if (startPoint.coverType == CoverPoint.CoverType.CORNER) {
+            // Get this point's Z vec.
+            searchDir = startPoint.transform.right;
+        }
+
+        else {
+            throw new System.Exception("Cover point has no type.");
+        }
+
+        return FindCoverPoint(startPoint.transform.position, searchDir);
     }
 }

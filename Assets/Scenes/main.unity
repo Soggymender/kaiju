@@ -216,7 +216,8 @@ GameObject:
   m_Component:
   - component: {fileID: 18809716}
   - component: {fileID: 18809717}
-  m_Layer: 0
+  - component: {fileID: 18809718}
+  m_Layer: 6
   m_Name: CoverPoint (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -230,14 +231,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 18809715}
-  m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -39, y: 0, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 202651001}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &18809717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +253,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+--- !u!135 &18809718
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18809715}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &36896742
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,7 +374,8 @@ GameObject:
   m_Component:
   - component: {fileID: 135808584}
   - component: {fileID: 135808585}
-  m_Layer: 0
+  - component: {fileID: 135808586}
+  m_Layer: 6
   m_Name: CoverPoint (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -396,6 +411,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+--- !u!135 &135808586
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 135808583}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &193052906
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,7 +704,8 @@ GameObject:
   m_Component:
   - component: {fileID: 290286302}
   - component: {fileID: 290286303}
-  m_Layer: 0
+  - component: {fileID: 290286304}
+  m_Layer: 6
   m_Name: CoverPoint (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -690,14 +719,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 290286301}
-  m_LocalRotation: {x: 0, y: 0.92387956, z: 0, w: 0.38268343}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -39, y: 0, z: 7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 202651001}
   m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 135, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &290286303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -712,6 +741,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+--- !u!135 &290286304
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290286301}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &292758796
 GameObject:
   m_ObjectHideFlags: 0
@@ -819,7 +861,8 @@ GameObject:
   m_Component:
   - component: {fileID: 325877514}
   - component: {fileID: 325877515}
-  m_Layer: 0
+  - component: {fileID: 325877516}
+  m_Layer: 6
   m_Name: CoverPoint (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -855,6 +898,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+--- !u!135 &325877516
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325877513}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &405437509
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,7 +1088,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &649042433
 Transform:
   m_ObjectHideFlags: 0
@@ -1226,7 +1282,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &666693921
 Transform:
   m_ObjectHideFlags: 0
@@ -1621,7 +1677,8 @@ GameObject:
   m_Component:
   - component: {fileID: 824104778}
   - component: {fileID: 824104779}
-  m_Layer: 0
+  - component: {fileID: 824104780}
+  m_Layer: 6
   m_Name: CoverPoint (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1635,14 +1692,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 824104777}
-  m_LocalRotation: {x: 0, y: -0.38268343, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -3, y: 0, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 202651001}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &824104779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1657,6 +1714,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+--- !u!135 &824104780
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824104777}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &905457543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2183,7 +2253,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1106928213}
   - component: {fileID: 1106928214}
-  m_Layer: 0
+  - component: {fileID: 1106928215}
+  m_Layer: 6
   m_Name: CoverPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2219,6 +2290,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+--- !u!135 &1106928215
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106928212}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1166631748
 GameObject:
   m_ObjectHideFlags: 0
@@ -2482,7 +2566,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1275021162}
   - component: {fileID: 1275021163}
-  m_Layer: 0
+  - component: {fileID: 1275021164}
+  m_Layer: 6
   m_Name: CoverPoint (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2518,6 +2603,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+--- !u!135 &1275021164
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275021161}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1282598778
 GameObject:
   m_ObjectHideFlags: 0
@@ -3867,7 +3965,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2082332553}
   - component: {fileID: 2082332554}
-  m_Layer: 0
+  - component: {fileID: 2082332555}
+  m_Layer: 6
   m_Name: CoverPoint (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3881,14 +3980,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2082332552}
-  m_LocalRotation: {x: 0, y: 0.9238796, z: -0, w: -0.38268325}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -3, y: 0, z: 7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 202651001}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 225, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &2082332554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3903,3 +4002,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+--- !u!135 &2082332555
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2082332552}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
