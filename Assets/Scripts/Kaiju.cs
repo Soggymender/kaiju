@@ -17,6 +17,11 @@ public class Kaiju : MonoBehaviour
     }
     
     bool canMove = false;
+
+    float yVelocity = 0.0f;
+    float jumpSpeed = 6.5f;
+    float gravity = 9.6f;
+
     CoverPoint coverPoint = null;
     CoverPoint targetCoverPoint = null;
     public Transform coverOffset = null;
@@ -73,8 +78,11 @@ public class Kaiju : MonoBehaviour
                 queuedAction = false;
             }
 
-            UpdateCoverPointHold();
-            UpdateCoverPointRelease();
+            if (canMove) {
+
+                UpdateCoverPointHold();
+                UpdateCoverPointRelease();
+            }
         }
 
         // Update Lean
@@ -142,6 +150,21 @@ public class Kaiju : MonoBehaviour
 
             UpdateTransitionTime(State.STAND);
         }
+
+        // Fake jumping and gravity. Applies to root, not full object. No collision. Just visual flare / feedback absent animations.
+        Vector3 curPos = root.transform.position;
+
+        curPos.y += yVelocity * Time.deltaTime;
+        if (curPos.y < transform.position.y && yVelocity < 0.0f) {
+            curPos.y = transform.position.y;
+            yVelocity = 0.0f;
+        }
+
+        root.transform.position = curPos;
+
+        yVelocity -= gravity * Time.deltaTime;
+
+
 
         // Apply any active scale lerp.
         if (scaleLength != 0) {
@@ -328,6 +351,8 @@ public class Kaiju : MonoBehaviour
             //scaleStart = root.transform.localScale.y;
             //scaleTarget = 1.0f;
             root.transform.localScale = new Vector3(1, 1, 1);
+
+            yVelocity = jumpSpeed;
 
             // We reset this now, or after we slide so we can use it to slide past corner cover.
             if (!foundCover)
