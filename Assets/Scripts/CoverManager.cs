@@ -66,11 +66,13 @@ public class CoverManager : MonoBehaviour
         // Close cover: Building is 20 meters wide, 32 with sidewalks. 18 meters between cover points. 
         // Far cover: Gap between buildings is 40 meters, and kaiju should be able to leap from a wall cover past adjacent corner cover to wall cover across road lanes. 60 meters
 
-        float dist = far ? 63 : 23;
+        float dist = 27; // This is far enough to find adjacent on same building, and "back" across the street.
 
-        if (back)
-            dist = 27;
-        
+        // Far needs to pass over close cover and search farther.
+        if (far && !back) {
+            p1 += searchDir * (60 - 24);
+        }
+
         // Cast from far to near so we get the last point when moving far. When moving near there should only be one or no possible matches but when going far there will be up to two corners between.
         if (Physics.SphereCast(p1 + (searchDir * dist), 1.0f, -searchDir, out hit, dist, 1 << coverPointLM)) {
             distToNext = hit.distance;

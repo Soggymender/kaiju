@@ -19,7 +19,7 @@ public class Kaiju : MonoBehaviour
     bool canMove = false;
 
     float yVelocity = 0.0f;
-    float jumpSpeed = 6.5f;
+    float jumpSpeed = 9.0f;
     float gravity = 9.6f;
 
     CoverPoint coverPoint = null;
@@ -29,7 +29,8 @@ public class Kaiju : MonoBehaviour
 
     const float STAND_TO_LEAN_LENGTH = 0.5f;
     const float LEAN_TO_STAND_LENGTH = 0.5f;
-    const float SLIDE_LENGTH = 1.0f;
+    const float JUMP_LENGTH = 1.85f;
+    const float SLIDE_LENGTH = 0.75f; // .5 is nice because a slide is always two back to back passing through a corner.
     float transitionTime = 0.0f;
     float transitionLength = 0.0f;
 
@@ -107,7 +108,7 @@ public class Kaiju : MonoBehaviour
             transform.position = Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
             transform.rotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
 
-            UpdateCoverPointHold();
+            //UpdateCoverPointHold();
 
             if (UpdateTransitionTime(State.STAND)) {
                 coverPoint = targetCoverPoint;
@@ -214,7 +215,7 @@ public class Kaiju : MonoBehaviour
         if (targetCoverPoint == null)
             return false;
 
-        StartSlide();
+        StartSlide(far);
 
         return true;
     }
@@ -224,7 +225,7 @@ public class Kaiju : MonoBehaviour
         if (targetCoverPoint == null)
             return false;
 
-        StartSlide();
+        StartSlide(far);
         return true;
     }
 
@@ -234,7 +235,7 @@ public class Kaiju : MonoBehaviour
         if (targetCoverPoint == null)
             return false;
 
-        StartSlide();
+        StartSlide(true);
         return true;
     }
 
@@ -254,12 +255,18 @@ public class Kaiju : MonoBehaviour
         transitionLength = LEAN_TO_STAND_LENGTH;
     }
 
-    void StartSlide() {
+    void StartSlide(bool far) {
 
         state = State.SLIDE;
 
         transitionTime = 0.0f;
-        transitionLength = SLIDE_LENGTH;
+
+        if (far) {
+            transitionLength = JUMP_LENGTH;
+        }
+        else {
+            transitionLength = SLIDE_LENGTH;
+        }
     }
 
     // You can start "queing up" a cover change while transitioning cover, so process down and hold events.
@@ -333,8 +340,11 @@ public class Kaiju : MonoBehaviour
                     foundCover = MoveToCoverRight(true);
             }
 
-            if (!foundCover) {
-
+            if (foundCover) {
+                // Found far cover, jump.
+                yVelocity = jumpSpeed;
+            } else {
+                
                 if (moveDir.x < 0.0f)
                     foundCover = MoveToCoverLeft(false);
 
@@ -352,8 +362,7 @@ public class Kaiju : MonoBehaviour
             //scaleTarget = 1.0f;
             root.transform.localScale = new Vector3(1, 1, 1);
 
-            yVelocity = jumpSpeed;
-
+            
             // We reset this now, or after we slide so we can use it to slide past corner cover.
             if (!foundCover)
                 moveDir.x = 0.0f;
@@ -364,10 +373,13 @@ public class Kaiju : MonoBehaviour
             // There is no close forward cover, only far, so we only need to check far without fall back to close as with horizontal above.
 
             if (moveTimer >= MOVE_FAR_LENGTH) {
-                
+
                 if (moveDir.y < 0.0f)
-                    MoveToCoverBack();
-            }
+                    if (MoveToCoverBack()) {
+                        // Found far cover, jump.
+                        yVelocity = jumpSpeed;
+                    }
+                }
 
             moveTimer = 0.0f;
             moveDir.y = 0.0f;
