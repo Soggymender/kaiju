@@ -49,7 +49,12 @@ public class Tricycle : MonoBehaviour
     void Update() {
 
         isGrounded = characterController.isGrounded;
-        
+
+        if (!canMove) {
+            curSpeed = 0.0f;
+            moveDirection = Vector3.zero;
+        }
+
         if (isGrounded && canMove) {
 //            moveDirection.y = -0.1f;
 

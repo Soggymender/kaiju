@@ -26,6 +26,10 @@ public class GameManager : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
             Cursor.lockState = CursorLockMode.None;
 
+        if (Input.GetKey("escape")) {
+            Application.Quit();
+        }
+
         if (Input.GetAxis("Fire1") != 0.0f) {
 
             if (oldSwap == false)
