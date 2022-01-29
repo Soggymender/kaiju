@@ -36,7 +36,8 @@ public class Tricycle : MonoBehaviour
     void Start() {
         //this plays the movement loop at start. 
         //it will always be playing but the player input inc/dec the volume <-- can be improved later
-        Movesound.Play();
+        if (Movesound != null)
+            Movesound.Play();
 
 
         characterController = GetComponent<CharacterController>();
@@ -64,18 +65,20 @@ public class Tricycle : MonoBehaviour
             if (Input.GetButton("Jump") && canMove) {
                 moveDirection.y = jumpSpeed;
 
-                //this just plays the jump sfx 
-                Jumpsfx.Play();
+                //this just plays the jump sfx
+                if (Jumpsfx != null)
+                    Jumpsfx.Play();
             }
         }
-      else {
-          // this is changing decreasing the volume of the wheel sfx loop when not moving or on the ground 
-          Movesound.volume = 0f;
-          }
+        else {
+            // this is changing decreasing the volume of the wheel sfx loop when not moving or on the ground 
+
+            if (Movesound != null) {
+                Movesound.volume = 0f;
+            }
+        }
         
-
-
-
+        
         moveDirection.y -= gravity * Time.deltaTime;
         
         // Player and Camera rotation
@@ -104,18 +107,20 @@ public class Tricycle : MonoBehaviour
     private void FixedUpdate() {
 
         // Move the controller
-        characterController.Move(moveDirection * Time.deltaTime);
+        //characterController.Move(moveDirection * Time.deltaTime);
 
-         // this is changing incerasing the volume of the wheel sfx loop when moving forward   
-         if (curSpeed >=.4  )
-             {
-                Movesound.volume = 1f;
-             }
-        if (curSpeed <= -.4f)
-            {
+        // this is changing incerasing the volume of the wheel sfx loop when moving forward   
+        if (Movesound != null) {
+            if (curSpeed >= .4) {
                 Movesound.volume = 1f;
             }
-      //  characterController.Move(moveDirection * Time.deltaTime);
+
+            if (curSpeed <= -.4f) {
+                Movesound.volume = 1f;
+            }
+        }
+        
+        //  characterController.Move(moveDirection * Time.deltaTime);
     }
 
     public void SetCanMove(bool canMove) {
