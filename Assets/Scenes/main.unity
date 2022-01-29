@@ -1828,6 +1828,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe8dd03b3c0d31e4191ffb51a9f53d17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Movesound: {fileID: 0}
+  Jumpsfx: {fileID: 0}
+  Impactsfx: {fileID: 0}
   speed: 7.5
   maxTurn: 90
   jumpSpeed: 6
