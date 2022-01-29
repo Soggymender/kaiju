@@ -14,6 +14,13 @@ public class GameManager : MonoBehaviour
 
     bool oldSwap = false;
 
+    void Start() {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        PlayAsKid();
+    }
+
     void Update() {
         //Press the space bar to apply no locking to the Cursor
         if (Input.GetKey(KeyCode.Space))
@@ -31,35 +38,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Start() {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+    void PlayAsKid() {
+
+        kidCam.enabled = true;
+        kid.SetCanMove(true);
+
+        kaijuCam.enabled = false;
+        kaiju.SetCanMove(false);
+
+        ParentAudioListener(kidCam.transform);
     }
 
-    // Debug swap avatars for testing both quickly in the same session.
-    void DebugSwapAvatars() {
+    void PlayAsKaiju() {
 
-        if (kidCam.enabled) {
+        kidCam.enabled = false;
+        kid.SetCanMove(false);
 
-            // Switch to Kaiju control.
-            kidCam.enabled = false;
-            kid.SetCanMove(false);
+        kaijuCam.enabled = true;
+        kaiju.SetCanMove(true);
 
-            kaijuCam.enabled = true;
-            kaiju.SetCanMove(true);
-
-            ParentAudioListener(kaijuCam.transform);
-        }
-        else if (kaijuCam.enabled) {
-            // Switch to Kid control.
-            kidCam.enabled = true;
-            kid.SetCanMove(true);
-
-            kaijuCam.enabled = false;
-            kaiju.SetCanMove(false);
-
-            ParentAudioListener(kidCam.transform);
-        }
+        ParentAudioListener(kaijuCam.transform);
     }
 
     void ParentAudioListener(Transform parent) {
@@ -70,5 +68,16 @@ public class GameManager : MonoBehaviour
         // align audio listener to camera (do after parent)
         audioListener.gameObject.transform.localPosition = Vector3.zero;
         audioListener.gameObject.transform.localRotation = Quaternion.identity;
+    }
+
+    // Debug swap avatars for testing both quickly in the same session.
+    void DebugSwapAvatars() {
+
+        if (kidCam.enabled) {
+            PlayAsKaiju();
+        }
+        else if (kaijuCam.enabled) {
+            PlayAsKid();
+        }
     }
 }

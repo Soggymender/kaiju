@@ -31,9 +31,7 @@ public class Tricycle : MonoBehaviour
     float curTurn = 0.0f;
 
     [HideInInspector]
-    public bool canMove = true;
-
-    int frameCount = 0;
+    public bool canMove = false;
 
     void Start() {
         //this plays the movement loop at start. 
@@ -99,6 +97,8 @@ public class Tricycle : MonoBehaviour
         }
 
         
+        // Move the controller
+        characterController.Move(moveDirection * Time.deltaTime);
     }
 
     private void FixedUpdate() {
@@ -115,6 +115,7 @@ public class Tricycle : MonoBehaviour
             {
                 Movesound.volume = 1f;
             }
+      //  characterController.Move(moveDirection * Time.deltaTime);
     }
 
     public void SetCanMove(bool canMove) {
