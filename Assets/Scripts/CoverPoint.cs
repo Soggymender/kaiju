@@ -12,4 +12,5 @@ public class CoverPoint : MonoBehaviour
 
     public int id;
     public CoverType coverType;
+    public float headingOffset;
 }

@@ -82,10 +82,10 @@ public class Kaiju : MonoBehaviour
         else if (state == State.SLIDE) {
 
             Vector3 startAngles = coverPoint.transform.rotation.eulerAngles;
-            startAngles = new Vector3(startAngles.x, startAngles.y + 180, startAngles.z);
+            startAngles = new Vector3(startAngles.x, startAngles.y + coverPoint.headingOffset + 180, startAngles.z);
 
             Vector3 targetAngles = targetCoverPoint.transform.rotation.eulerAngles;
-            targetAngles = new Vector3(targetAngles.x, targetAngles.y + 180, targetAngles.z);
+            targetAngles = new Vector3(targetAngles.x, targetAngles.y + targetCoverPoint.headingOffset + 180, targetAngles.z);
      
             transform.position = Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
             transform.rotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
@@ -97,6 +97,16 @@ public class Kaiju : MonoBehaviour
                 targetCoverPoint = null;
 
                 // If this is a corner, keep going.
+                if (coverPoint.coverType == CoverPoint.CoverType.CORNER) {
+                    if (moveVal < 0) {
+                        MoveToCoverLeft(false);
+                    }
+                    else if (moveVal > 0) {
+                        MoveToCoverRight(false);
+                    }
+                }
+
+                moveVal = 0.0f;
             }
         }
 
@@ -240,7 +250,7 @@ public class Kaiju : MonoBehaviour
             }
 
             moveTimer = 0.0f;
-            moveVal = 0.0f;
+            //moveVal = 0.0f;
         }
     }
 }

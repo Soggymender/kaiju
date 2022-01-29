@@ -27,7 +27,11 @@ public class CameraCollision : MonoBehaviour {
         Vector3 currentPos = defaultPos;
         RaycastHit hit;
         Vector3 dirTmp = parentTransform.TransformPoint(defaultPos) - referenceTransform.position;
-        if (Physics.SphereCast(referenceTransform.position, collisionOffset, dirTmp, out hit, defaultDistance)) {
+
+        // Don't collide with characters.
+        LayerMask characterLM = LayerMask.NameToLayer("Character");
+
+        if (Physics.SphereCast(referenceTransform.position, collisionOffset, dirTmp, out hit, defaultDistance, ~(1 << characterLM))) {
             currentPos = (directionNormalized * (hit.distance - collisionOffset));
 
             transform.localPosition = currentPos;

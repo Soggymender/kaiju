@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+  headingOffset: 0
 --- !u!135 &3809790183250218026
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -107,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+  headingOffset: 45
 --- !u!135 &3809790183281744326
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -207,6 +209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+  headingOffset: 0
 --- !u!135 &3809790183395718508
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -267,6 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+  headingOffset: 45
 --- !u!135 &3809790183546892368
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -327,6 +331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+  headingOffset: 45
 --- !u!135 &3809790183815308394
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -484,6 +489,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+  headingOffset: 0
 --- !u!135 &3809790184467559498
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -544,6 +550,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 1
+  headingOffset: 0
 --- !u!135 &3809790184634995057
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -604,6 +611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   coverType: 2
+  headingOffset: 45
 --- !u!135 &3809790184671145133
 SphereCollider:
   m_ObjectHideFlags: 0
