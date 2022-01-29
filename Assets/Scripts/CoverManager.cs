@@ -54,15 +54,22 @@ public class CoverManager : MonoBehaviour
         return coverPoints[id];
     }
 
-    CoverPoint FindCoverPoint(Vector3 startPos, Vector3 searchDir) {
+    CoverPoint FindCoverPoint(CoverPoint startPoint, Vector3 searchDir, bool far) {
 
         RaycastHit hit;
 
-        Vector3 p1 = startPos;
+        Vector3 p1 = startPoint.transform.position;
         float distToNext = 0;
 
-        // Building is 20 meters wide, 32 with sidewalks. 18 meters between cover points. 
-        if (Physics.SphereCast(p1, 1.0f, searchDir, out hit, 20)) {
+        LayerMask coverPointLM = LayerMask.NameToLayer("Cover Point");
+
+        // Close cover: Building is 20 meters wide, 32 with sidewalks. 18 meters between cover points. 
+        // Far cover: Gap between buildings is 40 meters, and kaiju should be able to leap from a wall cover past adjacent corner cover to wall cover across road lanes. 60 meters
+
+        float dist = far ? 63 : 23;
+        
+        // Cast from far to near so we get the last point when moving far. When moving near there should only be one or no possible matches but when going far there will be up to two corners between.
+        if (Physics.SphereCast(p1 + (searchDir * dist), 1.0f, -searchDir, out hit, dist, 1 << coverPointLM)) {
             distToNext = hit.distance;
 
             CoverPoint nextPoint = hit.transform.GetComponent<CoverPoint>();
@@ -73,7 +80,7 @@ public class CoverManager : MonoBehaviour
         return null;
     }
 
-    public CoverPoint FindNearLeftCover(CoverPoint startPoint) {
+    public CoverPoint FindLeftCover(CoverPoint startPoint, bool far) {
 
         // Find cover point due left.
         // If none, find cover point due back. (going around corner)
@@ -88,18 +95,25 @@ public class CoverManager : MonoBehaviour
 
         // If startPoint is corner 
         else if (startPoint.coverType == CoverPoint.CoverType.CORNER) {
-            // Get this point's Z vec.
-            searchDir = startPoint.transform.forward;
+
+            if (far) {
+                // Get this point's -X vec.
+                searchDir = -startPoint.transform.right;
+            }
+            else {
+                // Get this point's Z vec.
+                searchDir = startPoint.transform.forward;
+            }
         }
 
         else {
             throw new System.Exception("Cover point has no type.");
         }
 
-        return FindCoverPoint(startPoint.transform.position, searchDir);
+        return FindCoverPoint(startPoint, searchDir, far);
     }
 
-    public CoverPoint FindNearRightCover(CoverPoint startPoint) {
+    public CoverPoint FindRightCover(CoverPoint startPoint, bool far) {
 
         // Find cover point due right.
         // If none, find cover point due back. (going around corner)
@@ -114,14 +128,20 @@ public class CoverManager : MonoBehaviour
 
         // If startPoint is corner 
         else if (startPoint.coverType == CoverPoint.CoverType.CORNER) {
-            // Get this point's Z vec.
-            searchDir = startPoint.transform.right;
+
+            if (far) {
+                // Get this point's -X vec.
+                searchDir = -startPoint.transform.forward;
+            }
+            else {
+                searchDir = startPoint.transform.right;
+            }
         }
 
         else {
             throw new System.Exception("Cover point has no type.");
         }
 
-        return FindCoverPoint(startPoint.transform.position, searchDir);
+        return FindCoverPoint(startPoint, searchDir, far);
     }
 }
