@@ -54,7 +54,7 @@ public class CoverManager : MonoBehaviour
         return coverPoints[id];
     }
 
-    CoverPoint FindCoverPoint(CoverPoint startPoint, Vector3 searchDir, bool far) {
+    CoverPoint FindCoverPoint(CoverPoint startPoint, Vector3 searchDir, bool far, bool back) {
 
         RaycastHit hit;
 
@@ -67,6 +67,9 @@ public class CoverManager : MonoBehaviour
         // Far cover: Gap between buildings is 40 meters, and kaiju should be able to leap from a wall cover past adjacent corner cover to wall cover across road lanes. 60 meters
 
         float dist = far ? 63 : 23;
+
+        if (back)
+            dist = 27;
         
         // Cast from far to near so we get the last point when moving far. When moving near there should only be one or no possible matches but when going far there will be up to two corners between.
         if (Physics.SphereCast(p1 + (searchDir * dist), 1.0f, -searchDir, out hit, dist, 1 << coverPointLM)) {
@@ -110,7 +113,7 @@ public class CoverManager : MonoBehaviour
             throw new System.Exception("Cover point has no type.");
         }
 
-        return FindCoverPoint(startPoint, searchDir, far);
+        return FindCoverPoint(startPoint, searchDir, far, false);
     }
 
     public CoverPoint FindRightCover(CoverPoint startPoint, bool far) {
@@ -142,6 +145,33 @@ public class CoverManager : MonoBehaviour
             throw new System.Exception("Cover point has no type.");
         }
 
-        return FindCoverPoint(startPoint, searchDir, far);
+        return FindCoverPoint(startPoint, searchDir, far, false);
+    }
+
+    public CoverPoint FindBackCover(CoverPoint startPoint) {
+
+        // Find cover point back from current cover.
+        // Actually confusing because it's "forward" of Kaiju, but back from default camera angle.
+
+        Vector3 searchDir;
+
+        // If startPoint is wall
+        if (startPoint.coverType == CoverPoint.CoverType.WALL) {
+            // Get this point's X vec.
+            searchDir = -startPoint.transform.forward;
+        }
+
+        // If startPoint is corner 
+        else if (startPoint.coverType == CoverPoint.CoverType.CORNER) {
+
+            // Just no. You can't switch to far back cover from a corner. Corners are only for getting around buildings clockwise or counter clockwise.
+            return null;
+        }
+
+        else {
+            throw new System.Exception("Cover point has no type.");
+        }
+
+        return FindCoverPoint(startPoint, searchDir, true, true);
     }
 }

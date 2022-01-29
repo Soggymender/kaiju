@@ -309,6 +309,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3809790183329367647, guid: 6020af99bc160f144ae1b94c7dc16596, type: 3}
   m_PrefabInstance: {fileID: 3809790183529394982}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &252264266 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9167692796025928498, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
+  m_PrefabInstance: {fileID: 645961179}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &292758796
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,6 +639,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 9167692796025928499, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9167692797293527328, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
+      propertyPath: root
+      value: 
+      objectReference: {fileID: 252264266}
     - target: {fileID: 9167692797293527330, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
       propertyPath: m_Name
       value: Kaiju
@@ -1259,7 +1272,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9167692797293527328, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
   m_PrefabInstance: {fileID: 645961179}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1315541162}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 91685bc7caf77d24695fddc060b7e3c0, type: 3}
@@ -1828,6 +1841,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe8dd03b3c0d31e4191ffb51a9f53d17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Movesound: {fileID: 0}
+  Jumpsfx: {fileID: 0}
+  Impactsfx: {fileID: 0}
   speed: 7.5
   maxTurn: 90
   jumpSpeed: 6
@@ -1923,6 +1939,29 @@ Transform:
   m_Father: {fileID: 1166631749}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
+--- !u!1 &1315541162 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9167692797293527330, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
+  m_PrefabInstance: {fileID: 645961179}
+  m_PrefabAsset: {fileID: 0}
+--- !u!143 &1315541164
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315541162}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1398005541
 GameObject:
   m_ObjectHideFlags: 0
