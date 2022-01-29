@@ -30,6 +30,10 @@ public class Kaiju : MonoBehaviour
 
     bool queuedAction = false;
 
+    float moveVal = 0.0f;
+    float moveTimer = 0.0f;
+    const float MOVE_FAR_LENGTH = 0.5f;
+
     //Vector3 targetOffset;
 
     State state = State.STAND;
@@ -60,13 +64,8 @@ public class Kaiju : MonoBehaviour
                 queuedAction = false;
             }
 
-            if (Input.GetAxis("Horizontal") < 0.0f) {
-                MoveToCoverLeft();
-            }
-            else if (Input.GetAxis("Horizontal") > 0.0f) {
-                MoveToCoverRight();
-            }
-
+            UpdateCoverPointHold();
+            UpdateCoverPointRelease();
         }
 
         // Update Lean
@@ -90,6 +89,8 @@ public class Kaiju : MonoBehaviour
      
             transform.position = Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
             transform.rotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
+
+            UpdateCoverPointHold();
 
             if (UpdateTransitionTime(State.STAND)) {
                 coverPoint = targetCoverPoint;
@@ -153,21 +154,24 @@ public class Kaiju : MonoBehaviour
         transform.Rotate(new Vector3(0, 180.0f, 0));
     }
 
-    void MoveToCoverLeft() {
+    bool MoveToCoverLeft(bool far) {
 
-        targetCoverPoint = coverManager.FindNearLeftCover(coverPoint);
+        targetCoverPoint = coverManager.FindLeftCover(coverPoint, far);
         if (targetCoverPoint == null)
-            return;
+            return false;
 
         StartSlide();
+
+        return true;
     }
 
-    void MoveToCoverRight() {
-        targetCoverPoint = coverManager.FindNearRightCover(coverPoint);
+    bool MoveToCoverRight(bool far) {
+        targetCoverPoint = coverManager.FindRightCover(coverPoint, far);
         if (targetCoverPoint == null)
-            return;
+            return false;
 
         StartSlide();
+        return true;
     }
 
     void StartStandToLean() {
@@ -192,5 +196,51 @@ public class Kaiju : MonoBehaviour
 
         transitionTime = 0.0f;
         transitionLength = SLIDE_LENGTH;
+    }
+
+    // You can start "queing up" a cover change while transitioning cover, so process down and hold events.
+    void UpdateCoverPointHold() {
+
+        // If move is pressed, start a timer.
+        if (Input.GetButtonDown("Horizontal")) {
+            moveTimer = 0.0f;
+            moveVal = Input.GetAxis("Horizontal");
+        }
+
+        if (Input.GetButton("Horizontal")) {
+            moveTimer += Time.deltaTime;
+        }
+    }
+
+    // You can change cover once fully in cover so process up events.
+    void UpdateCoverPointRelease() {
+        
+
+        if (Input.GetButtonUp("Horizontal")) {
+
+            bool foundFarCover = false;
+            if (moveTimer >= MOVE_FAR_LENGTH) {
+
+                if (moveVal < 0.0f) {
+                    foundFarCover = MoveToCoverLeft(true);
+                }
+                else if (moveVal > 0.0f) {
+                    foundFarCover = MoveToCoverRight(true);
+                }
+            }
+
+            if (!foundFarCover) {
+
+                if (moveVal < 0.0f) {
+                    MoveToCoverLeft(false);
+                }
+                else if (moveVal > 0.0f) {
+                    MoveToCoverRight(false);
+                }
+            }
+
+            moveTimer = 0.0f;
+            moveVal = 0.0f;
+        }
     }
 }
