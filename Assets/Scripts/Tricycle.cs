@@ -12,7 +12,8 @@ public class Tricycle : MonoBehaviour
     public AudioSource as_Jump;
 
 
-    public float speed = 7.5f;
+    const float JUMP_TURN_SPEED = 4.5f;
+    public float maxSpeed = 7.5f;
     public float maxTurn = 90.0f;
     public float jumpSpeed = 5.0f;
     public float gravity = 9.6f;
@@ -23,11 +24,13 @@ public class Tricycle : MonoBehaviour
     
 
 
+
+
     CharacterController characterController;
-    Vector3 moveDirection = Vector3.zero;
+    public Vector3 moveDirection = Vector3.zero;
     Vector2 rotation = Vector2.zero;
 
-    float curSpeed = 0.0f;
+    public float curSpeed = 0.0f;
     float curTurn = 0.0f;
 
     [HideInInspector]
@@ -63,18 +66,19 @@ public class Tricycle : MonoBehaviour
         }
 
         if (isGrounded && canMove) {
-//            moveDirection.y = -0.1f;
+            
 
             // We are grounded, so recalculate move direction based on axes
             Vector3 forward = transform.TransformDirection(Vector3.forward);
             Vector3 right = transform.TransformDirection(Vector3.right);
-            curSpeed = canMove ? speed * Input.GetAxis("Vertical") : 0;
+            curSpeed = canMove ? maxSpeed * Input.GetAxis("Vertical") : 0;
             curTurn = canMove ? maxTurn * Input.GetAxis("Horizontal") : 0;
+
             moveDirection = (forward * curSpeed);// + (right * curSpeedY);
-            
+            moveDirection.y = -0.4f;
 
 
-            if (Input.GetButton("Jump") && canMove) {
+            if (Input.GetButtonDown("Jump") && canMove) {
                 moveDirection.y = jumpSpeed;
 
                 //this just plays the jump sfx
@@ -102,11 +106,11 @@ public class Tricycle : MonoBehaviour
 
             //if (yVel == 0.0f && characterController.velocity.y != 0.0f) {
             if (!isGrounded && curSpeed <= 0.01f) {
-                effectiveSpeed = 1.0f;
+                effectiveSpeed = JUMP_TURN_SPEED;
             }
 
             if (effectiveSpeed != 0) {
-                float turnSpeedScalar = effectiveSpeed / speed;
+                float turnSpeedScalar = effectiveSpeed / maxSpeed;
                 transform.eulerAngles = new Vector2(0, transform.eulerAngles.y + (curTurn * turnSpeedScalar * Time.deltaTime));
             }
         }
@@ -116,20 +120,14 @@ public class Tricycle : MonoBehaviour
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
-    private void FixedUpdate() {
+    void FixedUpdate() {
 
         // Move the controller
         //characterController.Move(moveDirection * Time.deltaTime);
 
         // this is changing incerasing the volume of the wheel sfx loop when moving forward   
         if (as_Wheels != null) {
-            if (curSpeed >= .4) {
-                as_Wheels.volume = 1f;
-            }
-
-            if (curSpeed <= -.4f) {
-                as_Wheels.volume = 1f;
-            }
+            as_Wheels.volume = Mathf.Abs(curSpeed) / maxSpeed;
         }
         
         //  characterController.Move(moveDirection * Time.deltaTime);
