@@ -8,9 +8,9 @@ using UnityEngine.Audio;
 public class Tricycle : MonoBehaviour
 {
 
-    public AudioSource Movesound;
-    public AudioSource Jumpsfx;
-    public AudioSource Impactsfx;
+    public AudioSource as_Wheels;
+    public AudioSource as_Jump;
+
 
     public float speed = 7.5f;
     public float maxTurn = 90.0f;
@@ -33,11 +33,18 @@ public class Tricycle : MonoBehaviour
     [HideInInspector]
     public bool canMove = false;
 
+    void Awake()
+    {
+        as_Wheels = GameObject.Find("Wheels").GetComponent<AudioSource>(); 
+        as_Jump = GameObject.Find("Jump").GetComponent<AudioSource>();
+       
+    }
+
     void Start() {
         //this plays the movement loop at start. 
         //it will always be playing but the player input inc/dec the volume <-- can be improved later
-        if (Movesound != null)
-            Movesound.Play();
+        if (as_Wheels != null)
+            as_Wheels.Play();
 
 
         characterController = GetComponent<CharacterController>();
@@ -71,15 +78,15 @@ public class Tricycle : MonoBehaviour
                 moveDirection.y = jumpSpeed;
 
                 //this just plays the jump sfx
-                if (Jumpsfx != null)
-                    Jumpsfx.Play();
+                if (as_Jump != null)
+                    as_Jump.Play();
             }
         }
         else {
             // this is changing decreasing the volume of the wheel sfx loop when not moving or on the ground 
 
-            if (Movesound != null) {
-                Movesound.volume = 0f;
+            if (as_Wheels != null) {
+                as_Wheels.volume = 0f;
             }
         }
         
@@ -115,13 +122,13 @@ public class Tricycle : MonoBehaviour
         //characterController.Move(moveDirection * Time.deltaTime);
 
         // this is changing incerasing the volume of the wheel sfx loop when moving forward   
-        if (Movesound != null) {
+        if (as_Wheels != null) {
             if (curSpeed >= .4) {
-                Movesound.volume = 1f;
+                as_Wheels.volume = 1f;
             }
 
             if (curSpeed <= -.4f) {
-                Movesound.volume = 1f;
+                as_Wheels.volume = 1f;
             }
         }
         
