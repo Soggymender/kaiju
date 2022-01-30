@@ -34,7 +34,7 @@ public class Tricycle : MonoBehaviour
     float curTurn = 0.0f;
 
     [HideInInspector]
-    public bool canMove = false;
+    bool canMove = false;
 
     void Awake()
     {
