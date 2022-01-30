@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,14 +36,16 @@ public class GameManager : MonoBehaviour
     public Camera kaijuCam;
     public Kaiju kaiju;
 
-    public bool player1IsKid = true;
+    public PlayerControls leftPlayerControls;
+    public PlayerControls rightPlayerControls;
+
+    bool player1IsKid = true;
 
     public ScreenManager screenManager;
     public AudioListener audioListener;
 
     GameState gameState = GameState.NONE;
-
-    bool oldSwap = false;
+    GameState oldGameState = GameState.NONE;
 
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
@@ -64,14 +67,161 @@ public class GameManager : MonoBehaviour
             Application.Quit();
         }
 
-        // Merge screens.
+        UpdatePlayerControlsAndDisplay();
+    }
+
+    void UpdatePlayerControlsAndDisplay()
+    {
+        bool change = false;
+
+        bool kidHasControl = false;
+        bool kaijuHasControl = false;
+
+        bool splitScreen = screenManager.GetSplitScreen();
+        
+        // Swap avatars or merge split screens.
         if (Input.GetKeyDown("1")) {
+
             if (screenManager.GetSplitScreen()) {
+
+                change = true;
+                splitScreen = false;
+            }
+            else {
+
+                change = true;
+                splitScreen = false;
+
+                player1IsKid = !player1IsKid;
+            }
+
+            if (player1IsKid) {
+                kidHasControl = true;
+                kaijuHasControl = false;
+            }
+            else {
+                kidHasControl = false;
+                kaijuHasControl = true;
+            }
+        }
+
+        // Split screens, or swap sides.
+        if (Input.GetKeyDown("2")) {
+            if (screenManager.GetSplitScreen()) {
+
+                // Swap
+                change = true;
+                splitScreen = true;
+
+                player1IsKid = !player1IsKid;
+            }
+            else {
+                // Split
+                change = true;
+                splitScreen = true;
+            }
+
+            kidHasControl = true;
+            kaijuHasControl = true;
+        }
+
+        // Game state changes.
+        if (gameState != oldGameState) {
+
+            change = true;
+
+            if (gameState == GameState.PLAY) {
+
+                if (splitScreen) {
+                    kidHasControl = true;
+                    kaijuHasControl = true;
+                }
+                else {
+                    if (player1IsKid)
+                        kidHasControl = true;
+                    else
+                        kaijuHasControl = true;
+                }
+            }
+            else {
+                kidHasControl = false;
+                kaijuHasControl = false;
+
+            }
+        }
+        
+        if (change) {
+
+            // Figure out left and right camera.
+            Camera lCamera;
+            Camera rCamera;
+
+            if (player1IsKid) {
+                lCamera = kidCam;
+                rCamera = kaijuCam;
+            }
+            else {
+                lCamera = kaijuCam;
+                rCamera = kidCam;
+            }
+
+            screenManager.Split(splitScreen, lCamera, rCamera);
+
+            if (player1IsKid) {
+                kid.SetPlayerControls(kidHasControl, leftPlayerControls);
+                kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
+
+                // Audio Listener always goes to player 1. Works in single or split screen.
+                ParentAudioListener(kidCam.transform);
+            } else {
+                kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
+                kid.SetPlayerControls(kidHasControl, rightPlayerControls);
+
+                // Audio Listener always goes to player 1. Works in single or split screen.
+                ParentAudioListener(kaijuCam.transform);
+            }
+        }
+
+
+
+        /*
+        // Merge screens, or swap avatars.
+        if (Input.GetKeyDown("1")) {
+            
+            if (screenManager.GetSplitScreen()) {
+
+                // Merge.
                 if (player1IsKid) {
                     screenManager.Split(false, kidCam, kaijuCam);
+                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
+                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
+
+                    ParentAudioListener(kidCam.transform);
                 }
                 else {
                     screenManager.Split(false, kaijuCam, kidCam);
+                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
+                    kid.SetPlayerControls(kidHasControl, rightPlayerControls);
+
+                    ParentAudioListener(kaijuCam.transform);
+                }
+            }
+            else {
+
+                // Swap.
+                if (player1IsKid) {
+                    screenManager.Split(false, kaijuCam, kidCam);
+                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
+                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
+
+                    ParentAudioListener(kaijuCam.transform);
+                }
+                else {
+                    screenManager.Split(false, kidCam, kaijuCam);
+                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
+                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
+
+                    ParentAudioListener(kidCam.transform);
                 }
             }
         }
@@ -83,66 +233,32 @@ public class GameManager : MonoBehaviour
                 if (player1IsKid) {
                     player1IsKid = false;
                     screenManager.Split(true, kaijuCam, kidCam);
+                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
+                    kid.SetPlayerControls(kidHasControl, rightPlayerControls);
                 }
                 else {
                     player1IsKid = true;
                     screenManager.Split(true, kidCam, kaijuCam);
+                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
+                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
                 }
             }
             else {
                 // Split
+
                 if (player1IsKid) {
                     screenManager.Split(true, kidCam, kaijuCam);
+                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
+                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
                 }
                 else {
                     screenManager.Split(true, kaijuCam, kidCam);
+                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
+                    kid.SetPlayerControls(kidHasControl, rightPlayerControls);
                 }
             }
         }
-        
-        if (gameState == GameState.PLAY) {
-
-            if (!screenManager.GetSplitScreen()) {
-
-                // Swap players - for debugging.
-                if (Input.GetAxis("Fire1") != 0.0f) {
-
-                    if (oldSwap == false)
-                        DebugSwapAvatars();
-
-                    oldSwap = true;
-                }
-                else {
-                    oldSwap = false;
-                }
-            }
-        }
-    }
-
-    void PlayAsKid() {
-
-        if (!screenManager.GetSplitScreen()) {
-            kidCam.enabled = true;
-            kaijuCam.enabled = false;
-        }
-
-        kid.SetCanMove(true);
-        kaiju.SetCanMove(false);
-
-        ParentAudioListener(kidCam.transform);
-    }
-
-    void PlayAsKaiju() {
-
-        if (!screenManager.GetSplitScreen()) {
-            kidCam.enabled = false;
-            kaijuCam.enabled = true;
-        }
-
-        kid.SetCanMove(false);
-        kaiju.SetCanMove(true);
-
-        ParentAudioListener(kaijuCam.transform);
+        */
     }
 
     void ParentAudioListener(Transform parent) {
@@ -155,19 +271,10 @@ public class GameManager : MonoBehaviour
         audioListener.gameObject.transform.localRotation = Quaternion.identity;
     }
 
-    // Debug swap avatars for testing both quickly in the same session.
-    void DebugSwapAvatars() {
-
-        if (kidCam.enabled) {
-            PlayAsKaiju();
-        }
-        else if (kaijuCam.enabled) {
-            PlayAsKid();
-        }
-    }
-
     // Game state sequencer.
     void UpdateGameState() {
+
+        oldGameState = gameState;
 
         if (gameState == GameState.NONE) {
             StartWait();
@@ -251,9 +358,6 @@ public class GameManager : MonoBehaviour
         gameState = GameState.PLAY;
         stateTime = 0.0f;
         stateLength = 0.0f;
-
-        // TODO: Play as selected avatar.
-        PlayAsKid();
     }
 
     void StartRound() {
@@ -279,8 +383,6 @@ public class GameManager : MonoBehaviour
 
     void EndPlay() {
 
-        kid.SetCanMove(false);
-        kaiju.SetCanMove(false);
     }
 
     void EndRound() {

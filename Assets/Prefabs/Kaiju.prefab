@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3151642abb3bc2c4b98efebc0400ef42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  revealDistance: 40
-  winDistance: 0
+  revealDistance: 30
+  winDistance: 7.5
   tricycle: {fileID: 0}
   mesh: {fileID: 1196645104}
 --- !u!1 &1196645104
@@ -585,6 +585,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91685bc7caf77d24695fddc060b7e3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controls: {fileID: 0}
   coverOffset: {fileID: 9167692797119831085}
   root: {fileID: 9167692796025928498}
 --- !u!143 &1315541164

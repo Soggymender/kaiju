@@ -11,6 +11,7 @@ public class Tricycle : MonoBehaviour
     public AudioSource as_Wheels;
     public AudioSource as_Jump;
 
+    public PlayerControls controls;
 
     const float JUMP_TURN_SPEED = 4.5f;
     public float maxSpeed = 7.5f;
@@ -71,14 +72,14 @@ public class Tricycle : MonoBehaviour
             // We are grounded, so recalculate move direction based on axes
             Vector3 forward = transform.TransformDirection(Vector3.forward);
             Vector3 right = transform.TransformDirection(Vector3.right);
-            curSpeed = canMove ? maxSpeed * Input.GetAxis("Vertical") : 0;
-            curTurn = canMove ? maxTurn * Input.GetAxis("Horizontal") : 0;
+            curSpeed = canMove ? maxSpeed * Input.GetAxis(controls.vertical) : 0;
+            curTurn = canMove ? maxTurn * Input.GetAxis(controls.horizontal) : 0;
 
             moveDirection = (forward * curSpeed);// + (right * curSpeedY);
             moveDirection.y = -0.4f;
 
 
-            if (Input.GetButtonDown("Jump") && canMove) {
+            if (Input.GetButtonDown(controls.jump) && canMove) {
                 moveDirection.y = jumpSpeed;
 
                 //this just plays the jump sfx
@@ -133,7 +134,10 @@ public class Tricycle : MonoBehaviour
         //  characterController.Move(moveDirection * Time.deltaTime);
     }
 
-    public void SetCanMove(bool canMove) {
+    public void SetPlayerControls(bool canMove, PlayerControls newControls) {
         this.canMove = canMove;
+
+        if (newControls != null)
+            controls = newControls;
     }
 }

@@ -15,7 +15,9 @@ public class Kaiju : MonoBehaviour
         STAND_TO_LEAN,
         LEAN_TO_STAND
     }
-    
+
+    public PlayerControls controls;
+
     bool canMove = false;
 
     float yVelocity = 0.0f;
@@ -37,7 +39,6 @@ public class Kaiju : MonoBehaviour
     bool queuedAction = false;
 
     Vector2 moveDir;
-    float moveVal = 0.0f;
     float moveTimer = 0.0f;
     const float MOVE_FAR_LENGTH = 0.5f;
 
@@ -194,10 +195,6 @@ public class Kaiju : MonoBehaviour
         return false;
     }
 
-    public void SetCanMove(bool canMove) {
-        this.canMove = canMove;
-    }
-
     void WarpToCoverPoint(CoverPoint newCoverPoint) {
 
         coverPoint = newCoverPoint;
@@ -274,11 +271,11 @@ public class Kaiju : MonoBehaviour
 
         // If move is pressed, start a timer.
         if (moveDir.magnitude == 0.0f) {
-            if (Input.GetButtonDown("Horizontal")) {
+            if (Input.GetButtonDown(controls.horizontal)) {
                 
                 // Start press/hold for clockwise / counter clockwise close cover change or far lateral change.
                 moveTimer = 0.0f;
-                moveDir.x = Input.GetAxis("Horizontal");
+                moveDir.x = Input.GetAxis(controls.horizontal);
                 moveDir.y = 0.0f;
 
                 scaleTime = 0.0f;
@@ -286,12 +283,12 @@ public class Kaiju : MonoBehaviour
                 scaleStart = root.transform.localScale.y;
                 scaleTarget = JUMP_SCALE;
             }
-            else if (Input.GetButtonDown("Vertical")) {
+            else if (Input.GetButtonDown(controls.vertical)) {
 
                 // Start press/hold for far forward cover change.
                 moveTimer = 0.0f;
                 moveDir.x = 0.0f;
-                moveDir.y = Input.GetAxis("Vertical");
+                moveDir.y = Input.GetAxis(controls.vertical);
 
                 scaleTime = 0.0f;
                 scaleLength = JUMP_SCALE_LENGTH;
@@ -300,7 +297,7 @@ public class Kaiju : MonoBehaviour
             }
         }
 
-        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) {
+        if (Input.GetButton(controls.horizontal) || Input.GetButton(controls.vertical)) {
             moveTimer += Time.deltaTime;
 
             scaleTime += Time.deltaTime;
@@ -328,7 +325,7 @@ public class Kaiju : MonoBehaviour
     void UpdateCoverPointRelease() {
         
         // Released horizontal AND we were tracking horizontal (user may have press vertical then horizontal).
-        if (Input.GetButtonUp("Horizontal") && moveDir.x != 0.0f) {
+        if (Input.GetButtonUp(controls.horizontal) && moveDir.x != 0.0f) {
 
             bool foundCover = false;
             if (moveTimer >= MOVE_FAR_LENGTH) {
@@ -368,7 +365,7 @@ public class Kaiju : MonoBehaviour
                 moveDir.x = 0.0f;
         }
 
-        if (Input.GetButtonUp("Vertical") && moveDir.y != 0.0f) {
+        if (Input.GetButtonUp(controls.vertical) && moveDir.y != 0.0f) {
 
             // There is no close forward cover, only far, so we only need to check far without fall back to close as with horizontal above.
 
@@ -391,5 +388,12 @@ public class Kaiju : MonoBehaviour
             //scaleTarget = 1.0f;
             root.transform.localScale = new Vector3(1, 1, 1);
         }
+    }
+    
+    public void SetPlayerControls(bool canMove, PlayerControls newControls) {
+        this.canMove = canMove;
+
+        if (newControls != null)
+            controls = newControls;
     }
 }
