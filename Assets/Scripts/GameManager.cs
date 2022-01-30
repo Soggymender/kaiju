@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour
     public Camera kaijuCam;
     public Kaiju kaiju;
 
+    public bool player1IsKid = true;
+
+    public ScreenManager screenManager;
     public AudioListener audioListener;
 
     GameState gameState = GameState.NONE;
@@ -52,34 +55,78 @@ public class GameManager : MonoBehaviour
 
         UpdateGameState();
 
-        //Press the space bar to apply no locking to the Cursor
+        // Spacebar to release the cursor - for debugging.
         if (Input.GetKey(KeyCode.Space))
             Cursor.lockState = CursorLockMode.None;
 
-        if (Input.GetKey("escape")) {
+        // Quit.
+        if (Input.GetKeyDown("escape")) {
             Application.Quit();
         }
 
-        if (gameState == GameState.PLAY) {
-            if (Input.GetAxis("Fire1") != 0.0f) {
+        // Merge screens.
+        if (Input.GetKeyDown("1")) {
+            if (screenManager.GetSplitScreen()) {
+                if (player1IsKid) {
+                    screenManager.Split(false, kidCam, kaijuCam);
+                }
+                else {
+                    screenManager.Split(false, kaijuCam, kidCam);
+                }
+            }
+        }
 
-                if (oldSwap == false)
-                    DebugSwapAvatars();
-
-                oldSwap = true;
+        // Split screens, or swap sides.
+        if (Input.GetKeyDown("2")) {
+            if (screenManager.GetSplitScreen()) {
+                // Swap.
+                if (player1IsKid) {
+                    player1IsKid = false;
+                    screenManager.Split(true, kaijuCam, kidCam);
+                }
+                else {
+                    player1IsKid = true;
+                    screenManager.Split(true, kidCam, kaijuCam);
+                }
             }
             else {
-                oldSwap = false;
+                // Split
+                if (player1IsKid) {
+                    screenManager.Split(true, kidCam, kaijuCam);
+                }
+                else {
+                    screenManager.Split(true, kaijuCam, kidCam);
+                }
+            }
+        }
+        
+        if (gameState == GameState.PLAY) {
+
+            if (!screenManager.GetSplitScreen()) {
+
+                // Swap players - for debugging.
+                if (Input.GetAxis("Fire1") != 0.0f) {
+
+                    if (oldSwap == false)
+                        DebugSwapAvatars();
+
+                    oldSwap = true;
+                }
+                else {
+                    oldSwap = false;
+                }
             }
         }
     }
 
     void PlayAsKid() {
 
-        kidCam.enabled = true;
-        kid.SetCanMove(true);
+        if (!screenManager.GetSplitScreen()) {
+            kidCam.enabled = true;
+            kaijuCam.enabled = false;
+        }
 
-        kaijuCam.enabled = false;
+        kid.SetCanMove(true);
         kaiju.SetCanMove(false);
 
         ParentAudioListener(kidCam.transform);
@@ -87,10 +134,12 @@ public class GameManager : MonoBehaviour
 
     void PlayAsKaiju() {
 
-        kidCam.enabled = false;
-        kid.SetCanMove(false);
+        if (!screenManager.GetSplitScreen()) {
+            kidCam.enabled = false;
+            kaijuCam.enabled = true;
+        }
 
-        kaijuCam.enabled = true;
+        kid.SetCanMove(false);
         kaiju.SetCanMove(true);
 
         ParentAudioListener(kaijuCam.transform);
