@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: aac86c760eb272b4d91b95d0cd6fdf18
+guid: b708a9b7fd763e44c9c19014f79bd246
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: bigwheel
-    second: {fileID: 2100000, guid: 30c12ffcf5cba39429a087c37204c312, type: 2}
+      name: kid
+    second: {fileID: 2100000, guid: 02243c5610f69bb49a6891bb8e660e2e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
