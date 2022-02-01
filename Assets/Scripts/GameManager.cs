@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -43,6 +44,12 @@ public class GameManager : MonoBehaviour
 
     public ScreenManager screenManager;
     public AudioListener audioListener;
+
+    public AudioClip ac_ready;
+    public AudioClip ac_go;
+    public AudioClip ac_airRaid;
+    public AudioSource as_start;
+    public AudioMixer MixerMaster;
 
     GameState gameState = GameState.NONE;
     GameState oldGameState = GameState.NONE;
@@ -341,6 +348,8 @@ public class GameManager : MonoBehaviour
         gameState = GameState.READY;
         stateTime = 0.0f;
         stateLength = READY_LENGTH;
+        PlayStartSound(ac_ready, MixerMaster, 1f);
+        PlayStartSound(ac_airRaid, MixerMaster, 1f);
 
         readyUI.SetActive(true);
     }
@@ -350,6 +359,7 @@ public class GameManager : MonoBehaviour
         gameState = GameState.GO;
         stateTime = 0.0f;
         stateLength = GO_LENGTH;
+        PlayStartSound(ac_go, MixerMaster, 1f);
         goUI.SetActive(true);
     }
 
@@ -375,6 +385,7 @@ public class GameManager : MonoBehaviour
 
     void EndReady() {
         readyUI.SetActive(false);
+
     }
 
     void EndGo() {
@@ -388,5 +399,22 @@ public class GameManager : MonoBehaviour
     void EndRound() {
         roundUI.SetActive(false);
     }
+    
+    void PlayStartSound(AudioClip clip, AudioMixer mix, float vol)
+    {
+        if(as_start == null)
+        {
+            
+            as_start = gameObject.AddComponent<AudioSource>();
+            as_start.PlayOneShot(clip, vol);
+            as_start.outputAudioMixerGroup = mix.FindMatchingGroups("SFX_Gameplay")[0];  
+        }
+        else
+        {
+            as_start.PlayOneShot(clip, vol);
+            as_start.outputAudioMixerGroup = mix.FindMatchingGroups("SFX_Gameplay")[0]; 
+        }
+    }
+    
 
 }
