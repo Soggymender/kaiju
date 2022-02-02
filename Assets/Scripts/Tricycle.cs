@@ -21,14 +21,13 @@ public class Tricycle : MonoBehaviour
     public float gravity = 9.6f;
     public bool isGrounded = false;
 
-    float speedBoostLength = 1.0f;
+    //float speedBoostLength = 1.0f;
     float speedBoostTime = 0.0f;
 
     float moveTime = 0.0f;
     float driftTime = 0.0f;
     float driftHeadingOffset = 0.0f;
     float maxDriftHeadingOffset = 45.0f;
-    float driftHeadingOffsetRate = 90.0f;
 
 
     CharacterController characterController;
