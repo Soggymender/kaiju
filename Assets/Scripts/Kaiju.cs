@@ -25,11 +25,38 @@ public class Kaiju : MonoBehaviour
     float jumpSpeed = 9.0f;
     float gravity = 9.6f;
 
+    CoverPoint oldCoverPoint = null;
     CoverPoint coverPoint = null;
     CoverPoint targetCoverPoint = null;
+
+    Vector3 slideVelocity;
+
+
+    // LEAN LEFT / RIGHT
+    bool leftLeanPositionValid = false;
+    Vector3 leftLeanPosition;
+
+    bool rightLeanPositionValid = false;
+    Vector3 rightLeanPosition;
+
+    Vector3 leanVelocity;
+
+
+    // Lean OR Slide target position. May be a cover corner, may be left / center / right lean position.
+    // Allows full control while switching cover.
+    Vector3 targetPosition;
+    Quaternion targetRotation;
+
+
+
+    // COVER OFFSET (toward building)
+
     public Transform coverOffset = null;
     public GameObject root = null;
 
+    Vector3 lateralOffset; 
+    
+    
     const float STAND_TO_LEAN_LENGTH = 0.5f;
     const float LEAN_TO_STAND_LENGTH = 0.5f;
     const float JUMP_LENGTH = 1.85f;
@@ -64,7 +91,9 @@ public class Kaiju : MonoBehaviour
             throw new System.Exception("Couldn't find CoverManager in scene.");
         }
 
+        
         coverPoint = coverManager.GetRandomCoverPoint();
+        oldCoverPoint = coverPoint;
 
         WarpToCoverPoint(coverPoint);
     }
@@ -72,6 +101,7 @@ public class Kaiju : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Update desired direction and jump hold / release.
         if (canMove) {
 
             // Keep track of desired direction between moves.
@@ -99,7 +129,16 @@ public class Kaiju : MonoBehaviour
 
         // Update Stand
         if (state == State.STAND) {
+            // While standing the transform is always some interpolation between the current cover point and the one to the left or right, depending on input.
+            // This creates a lean-out-of-cover effect.
 
+            UpdateLean();
+
+            // Stand angle with back to wall.
+            Vector3 standAngle = coverPoint.transform.rotation.eulerAngles;
+            standAngle = new Vector3(standAngle.x, standAngle.y + coverPoint.headingOffset + 180, standAngle.z);
+
+            targetRotation = Quaternion.Euler(standAngle);
         }
 
         // Update Lean
@@ -111,19 +150,12 @@ public class Kaiju : MonoBehaviour
         // Update slide
         else if (state == State.SLIDE) {
 
-            Vector3 startAngles = coverPoint.transform.rotation.eulerAngles;
-            startAngles = new Vector3(startAngles.x, startAngles.y + coverPoint.headingOffset + 180, startAngles.z);
-
-            Vector3 targetAngles = targetCoverPoint.transform.rotation.eulerAngles;
-            targetAngles = new Vector3(targetAngles.x, targetAngles.y + targetCoverPoint.headingOffset + 180, targetAngles.z);
-     
-            Vector3 newPosition = Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
-            Quaternion newRotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
-
-            Move(newPosition, newRotation);
+            UpdateLean();
+            UpdateSlide();
 
             if (UpdateTransitionTime(State.STAND)) {
-                coverPoint = targetCoverPoint;
+                //coverPoint = targetCoverPoint;
+
                 targetCoverPoint = null;
 
                 // If this is a corner, keep going.
@@ -168,8 +200,16 @@ public class Kaiju : MonoBehaviour
             */
         }
 
-        MoveRoot();
 
+        // ALWAYS interpolating between current position and possible target position. This covers slide and lean.
+        Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref leanVelocity, 0.25f);
+
+        // Transform.
+        Move(newPosition, targetRotation);
+
+        // Mesh.
+        MoveRoot();
+        
 
         // Apply any active scale lerp.
         if (scaleLength != 0) {
@@ -179,6 +219,46 @@ public class Kaiju : MonoBehaviour
             root.transform.localScale = new Vector3(1.0f, yScale, 1.0f);
             
         }
+    }
+
+    // Leaning left / right away from an "anchor" cover point.
+    void UpdateLean() {
+
+        // Assume we want to be at the cover point.
+        targetPosition = coverPoint.transform.position;
+
+        // There is no lean control at corners.
+        if (coverPoint.coverType == CoverPoint.CoverType.CORNER)
+            return;
+
+        // Lean left.
+        if (desiredDir.x < 0.0f)
+            targetPosition = leftLeanPosition;
+
+        // Lean right.
+        else if (desiredDir.x > 0.0f)
+            targetPosition = rightLeanPosition;
+    }
+
+    // Sliding left / right away from the current transform toward a corner cover point, or "lean" target (from UpdateLean).
+    void UpdateSlide() {
+
+        // Position interpolation.
+        Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref slideVelocity, transitionTime);
+
+        // Old, chonky.
+        //Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetCoverPoint.transform.position, ref slideVelocity, 0.5f);////Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
+        
+        // Angle interpolation.
+        Vector3 startAngles = oldCoverPoint.transform.rotation.eulerAngles;
+        startAngles = new Vector3(startAngles.x, startAngles.y + oldCoverPoint.headingOffset + 180, startAngles.z);
+
+        Vector3 targetAngles = coverPoint.transform.rotation.eulerAngles;
+        targetAngles = new Vector3(targetAngles.x, targetAngles.y + coverPoint.headingOffset + 180, targetAngles.z);
+        
+        targetRotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
+
+        //Move(newPosition, newRotation);
     }
 
     // Move the top level game object.
@@ -229,43 +309,80 @@ public class Kaiju : MonoBehaviour
         return false;
     }
 
+    void CalculateLeanPoints() {
+
+        // Look up the left and right cover points relative to this one for leaning.
+        CoverPoint leftCoverPoint = coverManager.FindLeftCover(coverPoint, false);
+        leftLeanPositionValid = true;
+
+        // Calculate left lean position relative to left cover point.
+        Vector3 toLeft = leftCoverPoint.transform.position - coverPoint.transform.position;
+        toLeft *= 0.25f;
+
+        leftLeanPosition = coverPoint.transform.position + toLeft;
+        rightLeanPositionValid = true;
+
+        // Calculate right lean position relative to right cover point.
+        CoverPoint rightCoverPoint = coverManager.FindRightCover(coverPoint, false);
+        Vector3 toRight = rightCoverPoint.transform.position - coverPoint.transform.position;
+        toRight *= 0.25f;
+
+        rightLeanPosition = coverPoint.transform.position + toRight;
+    }
+
     void WarpToCoverPoint(CoverPoint newCoverPoint) {
 
+        oldCoverPoint = coverPoint;
         coverPoint = newCoverPoint;
-
+      
         Vector3 newPosition = coverPoint.transform.position;
         Quaternion newRotation = coverPoint.transform.rotation;
 
         // Back to cover for now.
         Move(coverPoint.transform.position, coverPoint.transform.rotation * Quaternion.Euler(0, 180.0f, 0));
+
+        CalculateLeanPoints();
     }
 
     bool MoveToCoverLeft(bool far) {
 
-        targetCoverPoint = coverManager.FindLeftCover(coverPoint, far);
-        if (targetCoverPoint == null)
+        CoverPoint candidateCoverPoint = coverManager.FindLeftCover(coverPoint, far);
+        if (candidateCoverPoint == null)
             return false;
 
+        oldCoverPoint = coverPoint;
+        coverPoint = candidateCoverPoint;
+        CalculateLeanPoints();
+        
         StartSlide(far);
 
         return true;
     }
 
     bool MoveToCoverRight(bool far) {
-        targetCoverPoint = coverManager.FindRightCover(coverPoint, far);
-        if (targetCoverPoint == null)
+
+        CoverPoint candidateCoverPoint = coverManager.FindRightCover(coverPoint, far);
+        if (candidateCoverPoint == null)
             return false;
 
+        oldCoverPoint = coverPoint;
+        coverPoint = candidateCoverPoint;
+        CalculateLeanPoints();
+        
         StartSlide(far);
         return true;
     }
 
     bool MoveToCoverBack() {
 
-        targetCoverPoint = coverManager.FindBackCover(coverPoint);
-        if (targetCoverPoint == null)
+        CoverPoint candidateCoverPoint = coverManager.FindBackCover(coverPoint);
+        if (candidateCoverPoint == null)
             return false;
 
+        oldCoverPoint = coverPoint;
+        coverPoint = candidateCoverPoint;
+        CalculateLeanPoints();
+        
         StartSlide(true);
         return true;
     }
