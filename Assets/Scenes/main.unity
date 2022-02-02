@@ -666,6 +666,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 789167839, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2091842793, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
+      propertyPath: mixer
+      value: 
+      objectReference: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
     - target: {fileID: 2091842793, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
       propertyPath: tricycle
       value: 
@@ -3176,6 +3184,14 @@ PrefabInstance:
       propertyPath: horizontal
       value: RHorizontal
       objectReference: {fileID: 0}
+    - target: {fileID: 3684794571803473291, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3684794571803473291, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7788275059644482432, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -3233,6 +3249,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 702593449}
     - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
+      propertyPath: ac_go
+      value: 
+      objectReference: {fileID: 8300000, guid: e437905140645e64cb04de52e9abdb0b, type: 3}
+    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
       propertyPath: kaiju
       value: 
       objectReference: {fileID: 901720175}
@@ -3249,6 +3269,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 639279494}
     - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
+      propertyPath: ac_ready
+      value: 
+      objectReference: {fileID: 8300000, guid: b8574d31ea25b984aab6adec2e6d9168, type: 3}
+    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
       propertyPath: kaijuCam
       value: 
       objectReference: {fileID: 642937123}
@@ -3256,6 +3280,10 @@ PrefabInstance:
       propertyPath: dangerZone
       value: 
       objectReference: {fileID: 2091842793}
+    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
+      propertyPath: MixerMaster
+      value: 
+      objectReference: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
     - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
       propertyPath: audioListener
       value: 
