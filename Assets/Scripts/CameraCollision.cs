@@ -12,6 +12,7 @@ public class CameraCollision : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+        /*
         defaultPos = transform.localPosition;
         directionNormalized = defaultPos.normalized;
         parentTransform = transform.parent;
@@ -20,10 +21,12 @@ public class CameraCollision : MonoBehaviour {
         //Lock cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        */
     }
 
     // LateUpdate is called after Update
     void LateUpdate() {
+        /*
         Vector3 currentPos = defaultPos;
         RaycastHit hit;
         Vector3 dirTmp = parentTransform.TransformPoint(defaultPos) - referenceTransform.position;
@@ -39,5 +42,6 @@ public class CameraCollision : MonoBehaviour {
         else {
             transform.localPosition = Vector3.Lerp(transform.localPosition, currentPos, Time.deltaTime * cameraSpeed);
         }
+        */
     }
 }

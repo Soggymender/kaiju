@@ -396,4 +396,8 @@ public class Kaiju : MonoBehaviour
         if (newControls != null)
             controls = newControls;
     }
+
+    public bool GetCanMove() {
+        return canMove;
+    }
 }

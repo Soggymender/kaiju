@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 789167840}
   - component: {fileID: 2091842793}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: DangerZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   - component: {fileID: 1196645105}
   - component: {fileID: 1196645108}
   - component: {fileID: 1196645107}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,7 +143,7 @@ GameObject:
   - component: {fileID: 2054673921859882460}
   - component: {fileID: 4170128496618607907}
   - component: {fileID: 9040310287079115089}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 1590452786725995279}
   - component: {fileID: 820767310186069602}
   - component: {fileID: 1986281640032159206}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: arm_lower_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -311,7 +311,7 @@ GameObject:
   - component: {fileID: 590936092587383211}
   - component: {fileID: 4976106050306526028}
   - component: {fileID: 466296599075119788}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: claw_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 1679671238527117055}
   - component: {fileID: 3837472786417524901}
   - component: {fileID: 3577697427854257807}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: arm_upper_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -479,7 +479,7 @@ GameObject:
   - component: {fileID: 7107024253187252080}
   - component: {fileID: 7105950231409113755}
   - component: {fileID: 5599056992416840242}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: leg_upper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -560,7 +560,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7180793851437969211}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: monster(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -594,7 +594,7 @@ GameObject:
   - component: {fileID: 7758194516459899755}
   - component: {fileID: 4382695208931644343}
   - component: {fileID: 5881426545820056963}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -677,7 +677,7 @@ GameObject:
   - component: {fileID: 2688573823548218927}
   - component: {fileID: 4058074242738284527}
   - component: {fileID: 3916437377341078473}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: claw_thumb_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -760,7 +760,7 @@ GameObject:
   - component: {fileID: 1282817178223329290}
   - component: {fileID: 3063841365409471561}
   - component: {fileID: 6020499182143001456}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: claw_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -844,7 +844,7 @@ GameObject:
   - component: {fileID: 2509371974157465280}
   - component: {fileID: 3101276809584055893}
   - component: {fileID: 227285510237705125}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: arm_lower_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -928,7 +928,7 @@ GameObject:
   - component: {fileID: 6653809539823421621}
   - component: {fileID: 3218604650488728351}
   - component: {fileID: 1502736348477307633}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: leg_lower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1011,7 +1011,7 @@ GameObject:
   - component: {fileID: 5175763069012670538}
   - component: {fileID: 340351468282192505}
   - component: {fileID: 722056335742418123}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: arm_upper_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1095,7 +1095,7 @@ GameObject:
   - component: {fileID: 7148593540016038297}
   - component: {fileID: 1707994803740355414}
   - component: {fileID: 5181197578422070515}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1183,7 +1183,7 @@ GameObject:
   - component: {fileID: 2750033378910658466}
   - component: {fileID: 7308481565713902896}
   - component: {fileID: 7288231428983533079}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: claw_thumb_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1364,7 +1364,7 @@ GameObject:
   - component: {fileID: 9167692796014716518}
   - component: {fileID: 9167692796014716537}
   - component: {fileID: 9167692796014716536}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1462,7 +1462,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9167692796025928499}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1495,7 +1495,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9167692796707156991}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CameraParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1510,7 +1510,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9167692796707156990}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -0.00000047683716, y: 15, z: 5.0000005}
+  m_LocalPosition: {x: 0, y: 15, z: 5.0000005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1530,7 +1530,7 @@ GameObject:
   - component: {fileID: 9167692797028782831}
   - component: {fileID: 9167692797028782829}
   - component: {fileID: 9167692797028782826}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Kaiju Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -1607,6 +1607,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f7e39985672c84a8e67bdfde283052, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  kaiju: {fileID: 9167692797293527328}
   target: {fileID: 9167692796707156991}
   distance: 10
   height: 5
@@ -1638,7 +1639,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9167692797119831085}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CoverOffset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1671,7 +1672,7 @@ GameObject:
   - component: {fileID: 9167692797293527331}
   - component: {fileID: 9167692797293527328}
   - component: {fileID: 1315541164}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Kaiju
   m_TagString: Untagged
   m_Icon: {fileID: 0}
