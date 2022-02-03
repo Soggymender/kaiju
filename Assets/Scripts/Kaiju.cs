@@ -11,6 +11,7 @@ public class Kaiju : MonoBehaviour
         LEAN,
         SLIDE,
         LEAP,
+        JUMP,
 
         STAND_TO_LEAN,
         LEAN_TO_STAND
@@ -24,11 +25,38 @@ public class Kaiju : MonoBehaviour
     float jumpSpeed = 9.0f;
     float gravity = 9.6f;
 
+    CoverPoint oldCoverPoint = null;
     CoverPoint coverPoint = null;
     CoverPoint targetCoverPoint = null;
+
+    Vector3 slideVelocity;
+
+
+    // LEAN LEFT / RIGHT
+    bool leftLeanPositionValid = false;
+    Vector3 leftLeanPosition;
+
+    bool rightLeanPositionValid = false;
+    Vector3 rightLeanPosition;
+
+    Vector3 leanVelocity;
+
+
+    // Lean OR Slide target position. May be a cover corner, may be left / center / right lean position.
+    // Allows full control while switching cover.
+    Vector3 targetPosition;
+    Quaternion targetRotation;
+
+
+
+    // COVER OFFSET (toward building)
+
     public Transform coverOffset = null;
     public GameObject root = null;
 
+    Vector3 lateralOffset; 
+    
+    
     const float STAND_TO_LEAN_LENGTH = 0.5f;
     const float LEAN_TO_STAND_LENGTH = 0.5f;
     const float JUMP_LENGTH = 1.85f;
@@ -36,10 +64,9 @@ public class Kaiju : MonoBehaviour
     float transitionTime = 0.0f;
     float transitionLength = 0.0f;
 
-    bool queuedAction = false;
-
-    Vector2 moveDir;
-    float moveTimer = 0.0f;
+    public Vector2 desiredDir;
+    public Vector2 moveDir;
+    float jumpTimer = 0.0f;
     const float MOVE_FAR_LENGTH = 0.5f;
 
     // Scale lerp stuff.
@@ -64,7 +91,9 @@ public class Kaiju : MonoBehaviour
             throw new System.Exception("Couldn't find CoverManager in scene.");
         }
 
+        
         coverPoint = coverManager.GetRandomCoverPoint();
+        oldCoverPoint = coverPoint;
 
         WarpToCoverPoint(coverPoint);
     }
@@ -72,47 +101,61 @@ public class Kaiju : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Update desired direction and jump hold / release.
+        if (canMove) {
+
+            // Keep track of desired direction between moves.
+            // Latest direction press is the valid one.
+            if (Input.GetButton(controls.horizontal)) {
+                desiredDir.x = Input.GetAxis(controls.horizontal);
+                desiredDir.y = 0.0f;
+            } else if (Input.GetButton(controls.vertical)) {
+                desiredDir.x = 0.0f;
+                desiredDir.y = Input.GetAxis(controls.vertical);
+            }
+
+            // This seems nutty, but on keyboard you can let go of left, and still be holding right, etc.
+            if (Input.GetButtonUp(controls.horizontal) && !Input.GetButton(controls.horizontal))
+                desiredDir.x = 0.0f;
+
+            if (Input.GetButtonUp(controls.vertical) && !Input.GetButton(controls.vertical))
+                desiredDir.y = 0.0f;
+
+            UpdateCoverPointHold();
+            UpdateCoverPointRelease();
+        }
+
+
+
         // Update Stand
         if (state == State.STAND) {
+            // While standing the transform is always some interpolation between the current cover point and the one to the left or right, depending on input.
+            // This creates a lean-out-of-cover effect.
 
-            if (Input.GetMouseButtonDown(1) || queuedAction) {
-                StartStandToLean();
-                queuedAction = false;
-            }
+            UpdateLean();
 
-            if (canMove) {
+            // Stand angle with back to wall.
+            Vector3 standAngle = coverPoint.transform.rotation.eulerAngles;
+            standAngle = new Vector3(standAngle.x, standAngle.y + coverPoint.headingOffset + 180, standAngle.z);
 
-                UpdateCoverPointHold();
-                UpdateCoverPointRelease();
-            }
+            targetRotation = Quaternion.Euler(standAngle);
         }
 
         // Update Lean
         else if (state == State.LEAN) {
 
-            if (Input.GetMouseButtonDown(1) || queuedAction) {
-                StartLeanToStand();
-                queuedAction = false;
-            }
-
+            // Now we are always at the lean offset - close to the building, so we don't have a special state for it.
         }
 
         // Update slide
         else if (state == State.SLIDE) {
 
-            Vector3 startAngles = coverPoint.transform.rotation.eulerAngles;
-            startAngles = new Vector3(startAngles.x, startAngles.y + coverPoint.headingOffset + 180, startAngles.z);
-
-            Vector3 targetAngles = targetCoverPoint.transform.rotation.eulerAngles;
-            targetAngles = new Vector3(targetAngles.x, targetAngles.y + targetCoverPoint.headingOffset + 180, targetAngles.z);
-     
-            transform.position = Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
-            transform.rotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
-
-            //UpdateCoverPointHold();
+            UpdateLean();
+            UpdateSlide();
 
             if (UpdateTransitionTime(State.STAND)) {
-                coverPoint = targetCoverPoint;
+                //coverPoint = targetCoverPoint;
+
                 targetCoverPoint = null;
 
                 // If this is a corner, keep going.
@@ -131,7 +174,8 @@ public class Kaiju : MonoBehaviour
 
         // Update Stand to Lean
         else if (state == State.STAND_TO_LEAN) {
-
+            
+            /* Keeping this in case we decide to step out of cover at the end of a round.
             if (transitionTime >= transitionLength * 0.5f && Input.GetMouseButtonDown(1)) {
                 queuedAction = true;
             }
@@ -139,11 +183,13 @@ public class Kaiju : MonoBehaviour
             root.transform.position = Vector3.Lerp(transform.position, coverOffset.position, transitionTime / transitionLength);
 
             UpdateTransitionTime(State.LEAN);
+            */
         }
 
         // Update Lean to Stand
         else if (state == State.LEAN_TO_STAND) {
-
+            
+            /* Keeping this in case we decide to step out of cover at the end of a round.
             if (transitionTime >= transitionLength * 0.5f && Input.GetMouseButtonDown(1)) {
                 queuedAction = true;
             }
@@ -151,13 +197,95 @@ public class Kaiju : MonoBehaviour
             root.transform.position = Vector3.Lerp(coverOffset.position, transform.position, transitionTime / transitionLength);
 
             UpdateTransitionTime(State.STAND);
+            */
         }
+
+
+        // ALWAYS interpolating between current position and possible target position. This covers slide and lean.
+        Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref leanVelocity, 0.25f);
+
+        // Transform.
+        Move(newPosition, targetRotation);
+
+        // Mesh.
+        MoveRoot();
+        
+
+        // Apply any active scale lerp.
+        if (scaleLength != 0) {
+
+            float yScale = Mathf.Lerp(scaleStart, scaleTarget, scaleTime / scaleLength);
+
+            root.transform.localScale = new Vector3(1.0f, yScale, 1.0f);
+            
+        }
+    }
+
+    // Leaning left / right away from an "anchor" cover point.
+    void UpdateLean() {
+
+        // Assume we want to be at the cover point.
+        targetPosition = coverPoint.transform.position;
+
+        // There is no lean control at corners.
+        if (coverPoint.coverType == CoverPoint.CoverType.CORNER)
+            return;
+
+        // Lean left.
+        if (desiredDir.x < 0.0f)
+            targetPosition = leftLeanPosition;
+
+        // Lean right.
+        else if (desiredDir.x > 0.0f)
+            targetPosition = rightLeanPosition;
+    }
+
+    // Sliding left / right away from the current transform toward a corner cover point, or "lean" target (from UpdateLean).
+    void UpdateSlide() {
+
+        // Position interpolation.
+        Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref slideVelocity, transitionTime);
+
+        // Old, chonky.
+        //Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetCoverPoint.transform.position, ref slideVelocity, 0.5f);////Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
+        
+        // Angle interpolation.
+        Vector3 startAngles = oldCoverPoint.transform.rotation.eulerAngles;
+        startAngles = new Vector3(startAngles.x, startAngles.y + oldCoverPoint.headingOffset + 180, startAngles.z);
+
+        Vector3 targetAngles = coverPoint.transform.rotation.eulerAngles;
+        targetAngles = new Vector3(targetAngles.x, targetAngles.y + coverPoint.headingOffset + 180, targetAngles.z);
+        
+        targetRotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
+
+        //Move(newPosition, newRotation);
+    }
+
+    // Move the top level game object.
+    void Move(Vector3 newPosition, Quaternion newRotation) {
+
+        transform.position = newPosition;
+        transform.rotation = newRotation;
+    }
+
+    // Moving the root is just mesh manipulation to give the appearance of motion.
+    void MoveRoot() {
+
+        float y = root.transform.position.y;
+
+        root.transform.position = Vector3.Lerp(transform.position, coverOffset.position, 1.0f);
 
         // Fake jumping and gravity. Applies to root, not full object. No collision. Just visual flare / feedback absent animations.
         Vector3 curPos = root.transform.position;
+        curPos.y = y;
 
         curPos.y += yVelocity * Time.deltaTime;
         if (curPos.y < transform.position.y && yVelocity < 0.0f) {
+
+            if (state == State.JUMP) {
+                state = State.STAND;
+            }
+
             curPos.y = transform.position.y;
             yVelocity = 0.0f;
         }
@@ -165,20 +293,6 @@ public class Kaiju : MonoBehaviour
         root.transform.position = curPos;
 
         yVelocity -= gravity * Time.deltaTime;
-
-
-
-        // Apply any active scale lerp.
-        if (scaleLength != 0) {
-
-            float yScale = Mathf.Lerp(scaleStart, scaleTarget, scaleTime / scaleLength);
-
-            root.transform.localScale = new Vector3(1.0f, yScale, 1.0f);//.Set(1.0f, 2.0f, 1.0f);
-
-  //          float yScale = scaleTarget * scaleTime / scaleLength;
-    //        root.transform.localScale.Set(1.0f, yScale, 1.0f);
-            
-        }
     }
 
     // Update the transition time and change state to nextState if complete then return true.
@@ -195,45 +309,92 @@ public class Kaiju : MonoBehaviour
         return false;
     }
 
+    void CalculateLeanPoints() {
+
+        // Look up the left and right cover points relative to this one for leaning.
+        CoverPoint leftCoverPoint = coverManager.FindLeftCover(coverPoint, false);
+        leftLeanPositionValid = true;
+
+        // Calculate left lean position relative to left cover point.
+        Vector3 toLeft = leftCoverPoint.transform.position - coverPoint.transform.position;
+        toLeft *= 0.25f;
+
+        leftLeanPosition = coverPoint.transform.position + toLeft;
+        rightLeanPositionValid = true;
+
+        // Calculate right lean position relative to right cover point.
+        CoverPoint rightCoverPoint = coverManager.FindRightCover(coverPoint, false);
+        Vector3 toRight = rightCoverPoint.transform.position - coverPoint.transform.position;
+        toRight *= 0.25f;
+
+        rightLeanPosition = coverPoint.transform.position + toRight;
+    }
+
     void WarpToCoverPoint(CoverPoint newCoverPoint) {
 
+        oldCoverPoint = coverPoint;
         coverPoint = newCoverPoint;
-
-        transform.position = coverPoint.transform.position;
-        transform.rotation = coverPoint.transform.rotation;
+      
+        Vector3 newPosition = coverPoint.transform.position;
+        Quaternion newRotation = coverPoint.transform.rotation;
 
         // Back to cover for now.
-        transform.Rotate(new Vector3(0, 180.0f, 0));
+        Move(coverPoint.transform.position, coverPoint.transform.rotation * Quaternion.Euler(0, 180.0f, 0));
+
+        CalculateLeanPoints();
     }
 
     bool MoveToCoverLeft(bool far) {
 
-        targetCoverPoint = coverManager.FindLeftCover(coverPoint, far);
-        if (targetCoverPoint == null)
+        CoverPoint candidateCoverPoint = coverManager.FindLeftCover(coverPoint, far);
+        if (candidateCoverPoint == null)
             return false;
 
+        oldCoverPoint = coverPoint;
+        coverPoint = candidateCoverPoint;
+        CalculateLeanPoints();
+        
         StartSlide(far);
 
         return true;
     }
 
     bool MoveToCoverRight(bool far) {
-        targetCoverPoint = coverManager.FindRightCover(coverPoint, far);
-        if (targetCoverPoint == null)
+
+        CoverPoint candidateCoverPoint = coverManager.FindRightCover(coverPoint, far);
+        if (candidateCoverPoint == null)
             return false;
 
+        oldCoverPoint = coverPoint;
+        coverPoint = candidateCoverPoint;
+        CalculateLeanPoints();
+        
         StartSlide(far);
         return true;
     }
 
     bool MoveToCoverBack() {
 
-        targetCoverPoint = coverManager.FindBackCover(coverPoint);
-        if (targetCoverPoint == null)
+        CoverPoint candidateCoverPoint = coverManager.FindBackCover(coverPoint);
+        if (candidateCoverPoint == null)
             return false;
 
+        oldCoverPoint = coverPoint;
+        coverPoint = candidateCoverPoint;
+        CalculateLeanPoints();
+        
         StartSlide(true);
         return true;
+    }
+
+    void StartJump() {
+
+        state = State.JUMP;
+
+        yVelocity = jumpSpeed;
+
+        transitionTime = 0.0f;
+        transitionLength = 0.0f;
     }
 
     void StartStandToLean() {
@@ -269,131 +430,122 @@ public class Kaiju : MonoBehaviour
     // You can start "queing up" a cover change while transitioning cover, so process down and hold events.
     void UpdateCoverPointHold() {
 
-        // If move is pressed, start a timer.
-        if (moveDir.magnitude == 0.0f) {
-            if (Input.GetButtonDown(controls.horizontal)) {
+        if (!canMove)
+            return;
+
+        // Press Jump.
+        if (Input.GetButtonDown(controls.jump)) {
                 
-                // Start press/hold for clockwise / counter clockwise close cover change or far lateral change.
-                moveTimer = 0.0f;
-                moveDir.x = Input.GetAxis(controls.horizontal);
-                moveDir.y = 0.0f;
-
-                scaleTime = 0.0f;
-                scaleLength = JUMP_SCALE_LENGTH;
-                scaleStart = root.transform.localScale.y;
-                scaleTarget = JUMP_SCALE;
-            }
-            else if (Input.GetButtonDown(controls.vertical)) {
-
-                // Start press/hold for far forward cover change.
-                moveTimer = 0.0f;
-                moveDir.x = 0.0f;
-                moveDir.y = Input.GetAxis(controls.vertical);
-
-                scaleTime = 0.0f;
-                scaleLength = JUMP_SCALE_LENGTH;
-                scaleStart = root.transform.localScale.y;
-                scaleTarget = JUMP_SCALE;
-            }
+            // Start press/hold for clockwise / counter clockwise close cover change or far lateral change.
+            jumpTimer = 0.0f;
+            
+            scaleTime = 0.0f;
+            scaleLength = JUMP_SCALE_LENGTH;
+            scaleStart = root.transform.localScale.y;
+            scaleTarget = JUMP_SCALE;
         }
-
-        if (Input.GetButton(controls.horizontal) || Input.GetButton(controls.vertical)) {
-            moveTimer += Time.deltaTime;
+        
+        // Hold Jump.
+        if (Input.GetButton(controls.jump)) {
+            jumpTimer += Time.deltaTime;
 
             scaleTime += Time.deltaTime;
             if (scaleTime >= scaleLength)
                 scaleTime = scaleLength;
         }
-        else {
-          //  if (scaleLength > 0) {
-
-                /*
-                scaleTime -= Time.deltaTime;
-                if (scaleTime < 0) {
-                    scaleTime = 0.0f;
-                    scaleLength = 0.0f;
-                    scaleStart = 1.0f;
-                    scaleTarget = 1.0f;
-                    root.transform.localScale = new Vector3(1, 1, 1);
-                }
-                */
-            //}
-        }
     }
 
     // You can change cover once fully in cover so process up events.
     void UpdateCoverPointRelease() {
-        
-        // Released horizontal AND we were tracking horizontal (user may have press vertical then horizontal).
-        if (Input.GetButtonUp(controls.horizontal) && moveDir.x != 0.0f) {
+
+        if (!canMove)
+            return;
+
+        // Release jump
+        if (Input.GetButtonUp(controls.jump)) {
+
+            float oldJumpTimer = jumpTimer;
+
+            // Jump scale is the visual feedback response for input.
+            EndJumpScale();
+
+            if (state != State.STAND) {
+                return;
+            }
 
             bool foundCover = false;
-            if (moveTimer >= MOVE_FAR_LENGTH) {
 
-                if (moveDir.x < 0.0f)
-                    foundCover = MoveToCoverLeft(true);
+            // Transfer desired direction to move direction and take action on it.
+            // moveDir can get cleared out after a move, desiredDir is maintained to indicate input based intention.
+            moveDir = desiredDir;
+
+            // If on directional input, don't change cover.
+            if (Mathf.Approximately(moveDir.magnitude, 0.0f)) {
+                // Jump in place. Taunt, destabalize kid?
+                StartJump();
                 
-                else if (moveDir.x > 0.0f)
-                    foundCover = MoveToCoverRight(true);
             }
+            else {
 
-            if (foundCover) {
-                // Found far cover, jump.
-                yVelocity = jumpSpeed;
-            } else {
-                
-                if (moveDir.x < 0.0f)
-                    foundCover = MoveToCoverLeft(false);
+                if (moveDir.x != 0.0f) {
 
-                else if (moveDir.x > 0.0f)
-                    foundCover = MoveToCoverRight(false);
+                    // Going to try to move to other cover.
+
+                    if (oldJumpTimer >= MOVE_FAR_LENGTH) {
+
+                        if (moveDir.x < 0.0f)
+                            foundCover = MoveToCoverLeft(true);
+
+                        else if (moveDir.x > 0.0f)
+                            foundCover = MoveToCoverRight(true);
+                    }
+
+                    if (foundCover) {
+                        // Found far cover.
+                    }
+                    else {
+                        // Look for near cover.
+                        if (moveDir.x < 0.0f)
+                            foundCover = MoveToCoverLeft(false);
+
+                        else if (moveDir.x > 0.0f)
+                            foundCover = MoveToCoverRight(false);
+                    }
+                }
+                else if (moveDir.y < 0.0f) {
+
+                    if (oldJumpTimer >= MOVE_FAR_LENGTH) {
+
+                        if (MoveToCoverBack()) {
+                            // Found far cover, jump.
+                        }
+                    }
+                }
             }
-
-            moveTimer = 0.0f;
-
-            // scaleTimer = 0.0f; don't reset, we want to reverse.
-
-            scaleLength = 0.0f;// scaleTime * 0.5f;
-            scaleTime = 0.0f;
-            //scaleStart = root.transform.localScale.y;
-            //scaleTarget = 1.0f;
-            root.transform.localScale = new Vector3(1, 1, 1);
-
             
             // We reset this now, or after we slide so we can use it to slide past corner cover.
             if (!foundCover)
                 moveDir.x = 0.0f;
         }
-
-        if (Input.GetButtonUp(controls.vertical) && moveDir.y != 0.0f) {
-
-            // There is no close forward cover, only far, so we only need to check far without fall back to close as with horizontal above.
-
-            if (moveTimer >= MOVE_FAR_LENGTH) {
-
-                if (moveDir.y < 0.0f)
-                    if (MoveToCoverBack()) {
-                        // Found far cover, jump.
-                        yVelocity = jumpSpeed;
-                    }
-                }
-
-            moveTimer = 0.0f;
-            moveDir.y = 0.0f;
-
-            // scaleTimer = 0.0f; don't reset, we want to reverse.
-            scaleLength = 0.0f;// scaleTime * 0.5f;
-            scaleTime = 0.0f;
-            //scaleStart = root.transform.localScale.y;
-            //scaleTarget = 1.0f;
-            root.transform.localScale = new Vector3(1, 1, 1);
-        }
     }
-    
+
+    void EndJumpScale() {
+
+        jumpTimer = 0.0f;
+
+        scaleLength = 0.0f;
+        scaleTime = 0.0f;
+        root.transform.localScale = new Vector3(1, 1, 1);
+    }
+
     public void SetPlayerControls(bool canMove, PlayerControls newControls) {
         this.canMove = canMove;
 
         if (newControls != null)
             controls = newControls;
+    }
+
+    public bool GetCanMove() {
+        return canMove;
     }
 }
