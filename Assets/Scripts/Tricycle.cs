@@ -8,9 +8,12 @@ using UnityEngine.Audio;
 public class Tricycle : MonoBehaviour
 {
     public AudioMixer MainMixer;
-    public AudioSource as_Wheels;
+    public AudioSource as_Wheels_Rolling;
+    public AudioSource as_WheelsScraping;
     public AudioSource as_Jump;
-    public AudioClip ac_RollingLoop1;
+    public AudioClip ac_RollingLoop;
+    public AudioClip ac_DriftingLoop;
+    public float DriftingMaxVolume;
 
     public AudioClip[] ac_JumpClips;
 
@@ -50,7 +53,7 @@ public class Tricycle : MonoBehaviour
 
     void Awake()
     {
-        //as_Wheels = GameObject.Find("Wheels").GetComponent<AudioSource>(); 
+        //as_Wheels_Rolling = GameObject.Find("Wheels").GetComponent<AudioSource>(); 
         //as_Jump = GameObject.Find("Jump").GetComponent<AudioSource>();
        
     }
@@ -59,17 +62,27 @@ public class Tricycle : MonoBehaviour
         
         //this plays the movement loop at start. 
         //it will always be playing but the player input inc/dec the volume <-- can be improved later
-        if (as_Wheels == null)
-            as_Wheels = gameObject.AddComponent<AudioSource>();
-            as_Wheels.clip = ac_RollingLoop1;
-            as_Wheels.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
-            as_Wheels.loop = true;
-            as_Wheels.Play();
+        if (as_Wheels_Rolling == null)
+            as_Wheels_Rolling = gameObject.AddComponent<AudioSource>();
+            as_Wheels_Rolling.clip = ac_RollingLoop;
+            as_Wheels_Rolling.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
+            as_Wheels_Rolling.loop = true;
+            as_Wheels_Rolling.Play();
+
 
 
         characterController = GetComponent<CharacterController>();
         rotation.y = transform.eulerAngles.y;
-        as_Jump = gameObject.AddComponent<AudioSource>();
+
+        if (as_WheelsScraping == null)
+            as_Jump = gameObject.AddComponent<AudioSource>();
+            as_WheelsScraping = gameObject.AddComponent<AudioSource>();
+            as_WheelsScraping.clip = ac_DriftingLoop;
+            as_WheelsScraping.Play();
+            as_WheelsScraping.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
+            as_WheelsScraping.loop = true;
+            as_WheelsScraping.pitch = 1.5f;
+            as_WheelsScraping.volume = 0f;
 
 
 
@@ -105,10 +118,12 @@ public class Tricycle : MonoBehaviour
 
             if (drifting) {
                 UpdateDrifting();
+                as_WheelsScraping.volume = DriftingMaxVolume;
+                
             }
 
             else {
-
+                as_WheelsScraping.volume = 0f;
                 moveTime += Time.deltaTime;
 
                 Vector3 forward = transform.TransformDirection(Vector3.forward);
@@ -145,9 +160,10 @@ public class Tricycle : MonoBehaviour
         else {
             // this is changing decreasing the volume of the wheel sfx loop when not moving or on the ground 
 
-            if (as_Wheels != null) {
-                as_Wheels.volume = 0f;
+            if (as_Wheels_Rolling != null) {
+                as_Wheels_Rolling.volume = 0f;
             }
+                as_WheelsScraping.volume = 0f;
         }
         
         
@@ -232,8 +248,8 @@ public class Tricycle : MonoBehaviour
         //characterController.Move(moveDirection * Time.deltaTime);
 
         // this is changing incerasing the volume of the wheel sfx loop when moving forward   
-        if (as_Wheels != null) {
-            as_Wheels.volume = Mathf.Abs(curSpeed) / maxSpeed;
+        if (as_Wheels_Rolling != null) {
+            as_Wheels_Rolling.volume = Mathf.Abs(curSpeed) / maxSpeed;
         }
         
         //  characterController.Move(moveDirection * Time.deltaTime);
