@@ -204,12 +204,12 @@ AudioMixerSnapshotController:
     cedc19263a89d0541b9f01525ddc84fd: 0.77
     0c8b8d38518ec4a499ddb505a24d8475: 16130
     f0298fda3e99e9747896773eb13aa5ee: 0.401
-    f8ffbb0b8026627438c17211a84caa20: -2.2889848
+    f8ffbb0b8026627438c17211a84caa20: -0.27209988
     a56a57fb3383512478030445a2753483: 87
     d3ab980cb0eb8e047a952e88995879c9: 2253
     fb8a1e3c726871a4d9c162f2fc16e640: 1.73
     35650c6cce0defd40baf316c6772ac75: 0.29299998
-    1ca813bc785356a42bb3cc15a561c35e: -0.02577656
+    1ca813bc785356a42bb3cc15a561c35e: -2.5738313
     78df361e13942074fa42d93985e7bed0: 289
     4ddd4a9e1e5d61d4d9033b9a5011b5a5: 0.025578512
     fab886dfbdf4f3045abfcad49eb2cc18: 0.22600001
@@ -327,7 +327,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SFX_Child
+  m_Name: SFX_Kid
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 83bae4e4e01d815429c86742fe1c0a06
   m_Children: []

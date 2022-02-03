@@ -7,9 +7,13 @@ using UnityEngine.Audio;
 
 public class Tricycle : MonoBehaviour
 {
-
+    public AudioMixer MainMixer;
     public AudioSource as_Wheels;
     public AudioSource as_Jump;
+    public AudioClip ac_RollingLoop1;
+
+    public AudioClip[] ac_JumpClips;
+
 
     public PlayerControls controls;
     public GameObject mesh;
@@ -46,20 +50,27 @@ public class Tricycle : MonoBehaviour
 
     void Awake()
     {
-        as_Wheels = GameObject.Find("Wheels").GetComponent<AudioSource>(); 
-        as_Jump = GameObject.Find("Jump").GetComponent<AudioSource>();
+        //as_Wheels = GameObject.Find("Wheels").GetComponent<AudioSource>(); 
+        //as_Jump = GameObject.Find("Jump").GetComponent<AudioSource>();
        
     }
 
     void Start() {
+        
         //this plays the movement loop at start. 
         //it will always be playing but the player input inc/dec the volume <-- can be improved later
-        if (as_Wheels != null)
+        if (as_Wheels == null)
+            as_Wheels = gameObject.AddComponent<AudioSource>();
+            as_Wheels.clip = ac_RollingLoop1;
+            as_Wheels.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
+            as_Wheels.loop = true;
             as_Wheels.Play();
 
 
         characterController = GetComponent<CharacterController>();
         rotation.y = transform.eulerAngles.y;
+        as_Jump = gameObject.AddComponent<AudioSource>();
+
 
 
     }
@@ -128,7 +139,7 @@ public class Tricycle : MonoBehaviour
 
                 //this just plays the jump sfx
                 if (as_Jump != null)
-                    as_Jump.Play();
+                    playRandomJump(ac_JumpClips, MainMixer, as_Jump);
             }
         }
         else {
@@ -233,5 +244,12 @@ public class Tricycle : MonoBehaviour
 
         if (newControls != null)
             controls = newControls;
+    }
+        void playRandomJump(AudioClip[] clips, AudioMixer mix, AudioSource as_JumpSource)
+    {
+        int rand = Random.Range(0,clips.Length);
+        as_JumpSource.PlayOneShot(clips[rand], 1); 
+        as_JumpSource.outputAudioMixerGroup = mix.FindMatchingGroups("SFX_Echo")[0];
+        
     }
 }
