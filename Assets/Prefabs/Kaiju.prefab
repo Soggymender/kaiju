@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 789167839}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.375, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1516,6 +1516,8 @@ MonoBehaviour:
   controls: {fileID: 0}
   coverOffset: {fileID: 9167692797119831085}
   root: {fileID: 9167692796025928498}
+  desiredDir: {x: 0, y: 0}
+  moveDir: {x: 0, y: 0}
 --- !u!143 &1315541164
 CharacterController:
   m_ObjectHideFlags: 0
