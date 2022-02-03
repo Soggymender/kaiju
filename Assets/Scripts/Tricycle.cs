@@ -42,8 +42,9 @@ public class Tricycle : MonoBehaviour
     Vector3 driftDirection = Vector3.zero;
 
     public float curSpeed = 0.0f;
-    float curTurn = 0.0f;
+    public float curTurn = 0.0f;
     bool isJumping = false;
+    public float jumpDir = 0.0f;
 
     [HideInInspector]
     bool canMove = false;
@@ -79,12 +80,41 @@ public class Tricycle : MonoBehaviour
 
         isGrounded = characterController.isGrounded;
 
-        if (!canMove) {
-            curSpeed = 0.0f;
-            moveDirection = Vector3.zero;
+//        if (!canMove) {
+  //          curSpeed = 0.0f;
+    //        moveDirection = Vector3.zero;
+      //  }
+
+        // Instant acceleration, but coast to a stop unless braking.
+        if (!canMove || !Input.GetButton(controls.vertical)) {
+
+            if (curSpeed > 0.0f) {
+                curSpeed -= Time.deltaTime * 5.0f;
+
+                if (curSpeed < 0.0f)
+                    curSpeed = 0.0f;
+
+            }
+            else if (curSpeed < 0.0f) {
+                curSpeed += Time.deltaTime * 5.0f;
+
+                if (curSpeed > 0.0f)
+                    curSpeed = 0.0f;
+            }
+        }
+        else {
+            curSpeed = canMove ? maxSpeed * Input.GetAxis(controls.vertical) : 0;
         }
 
+
+
+
+
+        curTurn = canMove ? maxTurn * Input.GetAxis(controls.horizontal) : 0;
+
         if (isGrounded && canMove) {
+
+
 
             if (isJumping) {
                 isJumping = false;
@@ -92,16 +122,20 @@ public class Tricycle : MonoBehaviour
                 // If hard turn while landing, power slide.
                 if (curSpeed == maxSpeed && Mathf.Abs(curTurn) >= maxTurn * 0.66f) {
 
-                    drifting = true;
-                    driftTime = 0.0f;
+                    // If jump was a left turn, drift has to be a left turn.
+                    if ((curTurn < 0.0f && jumpDir < 0) || curTurn > 0.0f && jumpDir > 0) {
 
-                    moveTime = 0.0f;
+
+                        drifting = true;
+                        driftTime = 0.0f;
+
+                        moveTime = 0.0f;
+
+                    }
                 }
             }
 
-            // We are grounded, so recalculate move direction based on axes
-            curSpeed = canMove ? maxSpeed * Input.GetAxis(controls.vertical) : 0;
-            curTurn = canMove ? maxTurn * Input.GetAxis(controls.horizontal) : 0;
+          
 
             if (drifting) {
                 UpdateDrifting();
@@ -136,6 +170,8 @@ public class Tricycle : MonoBehaviour
 
                 isJumping = true;
                 drifting = false;
+
+                jumpDir = curTurn; // Track this so we don't drift in the opposite direction of the jump. Feels bad.
 
                 //this just plays the jump sfx
                 if (as_Jump != null)
@@ -201,7 +237,7 @@ public class Tricycle : MonoBehaviour
         }
 
         // If stop going.
-        if (curSpeed <= 0.0f) {
+        if (!Input.GetButton(controls.vertical)) {//curSpeed <= 0.0f) {
             drifting = false;
             speedBoostTime = 0.0f;
 
@@ -252,4 +288,12 @@ public class Tricycle : MonoBehaviour
         as_JumpSource.outputAudioMixerGroup = mix.FindMatchingGroups("SFX_Echo")[0];
         
     }
+
+    void OnControllerColliderHit(ControllerColliderHit hit) {
+        
+        if (hit.collider.tag == "obstacle") {
+            drifting = false;
+        }
+    }
+    
 }
