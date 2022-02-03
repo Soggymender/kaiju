@@ -98,9 +98,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainMixer: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
-  as_Wheels: {fileID: 0}
+  as_Wheels_Rolling: {fileID: 0}
+  as_WheelsScraping: {fileID: 0}
   as_Jump: {fileID: 0}
-  ac_RollingLoop1: {fileID: 8300000, guid: 11264f7d5f8d4a84493ff1dcb2ef5ee0, type: 3}
+  ac_RollingLoop: {fileID: 8300000, guid: 11264f7d5f8d4a84493ff1dcb2ef5ee0, type: 3}
+  ac_DriftingLoop: {fileID: 8300000, guid: c1f79b436af38454baefaf8f72eefe48, type: 3}
+  DriftingMaxVolume: 0.5
   ac_JumpClips:
   - {fileID: 8300000, guid: 2e9a82c7b51e86e459043a9315d169df, type: 3}
   - {fileID: 8300000, guid: 6c0358203e03b804fa5b3e7fde5c6272, type: 3}
