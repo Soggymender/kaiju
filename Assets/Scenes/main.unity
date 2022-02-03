@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3014,11 +3014,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3151642abb3bc2c4b98efebc0400ef42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2103975537 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2100863469439890415, guid: ac78e63528438534384e67754619012f, type: 3}
-  m_PrefabInstance: {fileID: 3320228649859087379}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3320228649859087379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3026,10 +3021,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3320228650840072021, guid: ac78e63528438534384e67754619012f, type: 3}
-      propertyPath: mesh
-      value: 
-      objectReference: {fileID: 2103975537}
     - target: {fileID: 3320228650840072021, guid: ac78e63528438534384e67754619012f, type: 3}
       propertyPath: controls
       value: 
@@ -3249,10 +3240,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 702593449}
     - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
-      propertyPath: ac_go
-      value: 
-      objectReference: {fileID: 8300000, guid: e437905140645e64cb04de52e9abdb0b, type: 3}
-    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
       propertyPath: kaiju
       value: 
       objectReference: {fileID: 901720175}
@@ -3269,10 +3256,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 639279494}
     - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
-      propertyPath: ac_ready
-      value: 
-      objectReference: {fileID: 8300000, guid: b8574d31ea25b984aab6adec2e6d9168, type: 3}
-    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
       propertyPath: kaijuCam
       value: 
       objectReference: {fileID: 642937123}
@@ -3281,21 +3264,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2091842793}
     - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
-      propertyPath: MixerMaster
-      value: 
-      objectReference: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
-    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
       propertyPath: audioListener
       value: 
       objectReference: {fileID: 1417310459}
-    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
-      propertyPath: leftPlayerControls
-      value: 
-      objectReference: {fileID: 7788275060138875123}
-    - target: {fileID: 7788275059644482435, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
-      propertyPath: rightPlayerControls
-      value: 
-      objectReference: {fileID: 7788275060138875124}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6cfd346351d790a47baf355666fe2d0b, type: 3}
 --- !u!114 &7788275060138875123 stripped

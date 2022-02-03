@@ -331,8 +331,8 @@ MonoBehaviour:
   kid: {fileID: 0}
   kaijuCam: {fileID: 0}
   kaiju: {fileID: 0}
-  leftPlayerControls: {fileID: 0}
-  rightPlayerControls: {fileID: 0}
+  leftPlayerControls: {fileID: 349667096445036239}
+  rightPlayerControls: {fileID: 1971357816246239945}
   screenManager: {fileID: 1884641350}
   audioListener: {fileID: 0}
   ac_ready: {fileID: 8300000, guid: b8574d31ea25b984aab6adec2e6d9168, type: 3}
