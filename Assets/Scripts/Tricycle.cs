@@ -7,6 +7,7 @@ using UnityEngine.Audio;
 
 public class Tricycle : MonoBehaviour
 {
+    // Audio
     public AudioMixer MainMixer;
     public AudioSource as_Wheels_Rolling;
     public AudioSource as_WheelsScraping;
@@ -20,9 +21,12 @@ public class Tricycle : MonoBehaviour
 
     public PlayerControls controls;
     public GameObject mesh;
+    public Stamina stamina;
 
     const float JUMP_TURN_SPEED = 4.5f;
-    public float maxSpeed = 7.5f;
+    const float MAX_SPEED = 7.5f;
+    const float SPRINT_SPEED = 10.0f;
+    public float maxSpeed = MAX_SPEED;
     public float maxTurn = 90.0f;
     public float jumpSpeed = 5.0f;
     public float gravity = 9.6f;
@@ -40,6 +44,9 @@ public class Tricycle : MonoBehaviour
     CharacterController characterController;
     public Vector3 moveDirection = Vector3.zero;
     Vector2 rotation = Vector2.zero;
+
+    bool requireSprintRepress = false;
+    bool sprinting = false;
 
     bool drifting = false;
     Vector3 driftDirection = Vector3.zero;
@@ -119,15 +126,9 @@ public class Tricycle : MonoBehaviour
             curSpeed = canMove ? maxSpeed * Input.GetAxis(controls.vertical) : 0;
         }
 
-
-
-
-
         curTurn = canMove ? maxTurn * Input.GetAxis(controls.horizontal) : 0;
 
         if (isGrounded && canMove) {
-
-
 
             if (isJumping) {
                 isJumping = false;
@@ -147,8 +148,6 @@ public class Tricycle : MonoBehaviour
                     }
                 }
             }
-
-          
 
             if (drifting) {
                 UpdateDrifting();
@@ -180,18 +179,8 @@ public class Tricycle : MonoBehaviour
             // This is a stupid gravity hack to keep isGrounded true.
             moveDirection.y = -0.4f;
 
-            if (Input.GetButtonDown(controls.jump) && canMove) {
-                moveDirection.y = jumpSpeed;
-
-                isJumping = true;
-                drifting = false;
-
-                jumpDir = curTurn; // Track this so we don't drift in the opposite direction of the jump. Feels bad.
-
-                //this just plays the jump sfx
-                if (as_Jump != null)
-                    playRandomJump(ac_JumpClips, MainMixer, as_Jump);
-            }
+            UpdateStartJump();
+            UpdateSprint();
         }
         else {
             // this is changing decreasing the volume of the wheel sfx loop when not moving or on the ground 
@@ -231,6 +220,69 @@ public class Tricycle : MonoBehaviour
 
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
+    }
+
+    void UpdateStartJump() {
+
+        if (Input.GetButtonDown(controls.jump) && canMove) {
+            moveDirection.y = jumpSpeed;
+
+            isJumping = true;
+            drifting = false;
+
+            jumpDir = curTurn; // Track this so we don't drift in the opposite direction of the jump. Feels bad.
+
+            //this just plays the jump sfx
+            if (as_Jump != null)
+                playRandomJump(ac_JumpClips, MainMixer, as_Jump);
+        }
+    }
+
+    void UpdateSprint() {
+
+        if (requireSprintRepress && Input.GetButtonDown(controls.sprint))
+            requireSprintRepress = false;
+
+        // Holding sprint, and accelerating forward.
+        if (Input.GetButton(controls.sprint) && !requireSprintRepress && Input.GetButton(controls.vertical) && Input.GetAxis(controls.vertical) > 0.0f) {
+
+            float staminaValue = stamina.GetValue();
+
+            if (!sprinting && staminaValue > 0.25f) {
+
+                StartSprinting();
+            }
+            else {
+
+                if (staminaValue == 0.0f) {
+                    StopSprinting();
+                    requireSprintRepress = true;
+                }
+            }
+        }
+        else {
+
+            if (sprinting) {
+
+                StopSprinting();
+            }
+        }
+    }
+
+    void StartSprinting() {
+
+        stamina.SetDischarge(true);
+        maxSpeed = SPRINT_SPEED;
+
+        sprinting = true;
+    }
+
+    void StopSprinting() {
+
+        stamina.SetDischarge(false);
+        maxSpeed = MAX_SPEED;
+
+        sprinting = false;
     }
 
     void UpdateDrifting() {
