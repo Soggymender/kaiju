@@ -9,6 +9,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Roads and Sidewalks
     second: {fileID: 2100000, guid: 7613a9718b0bf9d4fb7804b0e32f4129, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Roads and Sidewalks No Crossing
+    second: {fileID: 2100000, guid: 853cefe946bc9924197807658592d0e0, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
