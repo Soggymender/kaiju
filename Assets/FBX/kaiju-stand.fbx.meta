@@ -1,12 +1,17 @@
 fileFormatVersion: 2
-guid: 97e69d9de82e56446b800b4a6d0bbce0
+guid: b66110f5967e6184da24db31584fda9e
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
     second: Take 001
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: kaiju_rig_crab
+    second: {fileID: 2100000, guid: 62af535e4ce594c4ea74c619142c9280, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

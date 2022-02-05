@@ -31,7 +31,8 @@ public class Kaiju : MonoBehaviour
 
     Vector3 slideVelocity;
 
-
+    public Magnifier magnifier = null;
+    
     // LEAN LEFT / RIGHT
     bool leftLeanPositionValid = false;
     Vector3 leftLeanPosition;
@@ -543,6 +544,8 @@ public class Kaiju : MonoBehaviour
 
         if (newControls != null)
             controls = newControls;
+
+        magnifier.Show(canMove);
     }
 
     public bool GetCanMove() {
