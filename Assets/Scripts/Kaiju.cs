@@ -9,7 +9,10 @@ public class Kaiju : MonoBehaviour
         NONE,
         STAND,
         LEAN,
-        SLIDE,
+        SLIDE_NEAR,
+        SLIDE_LEFT,
+        SLIDE_RIGHT,
+        SLIDE_BACK,
         LEAP,
         JUMP,
 
@@ -84,6 +87,8 @@ public class Kaiju : MonoBehaviour
 
     CoverManager coverManager = null;
 
+    Animator animator = null;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -92,7 +97,11 @@ public class Kaiju : MonoBehaviour
             throw new System.Exception("Couldn't find CoverManager in scene.");
         }
 
-        
+        animator = GetComponentInChildren<Animator>();
+        if (coverManager == null) {
+            throw new System.Exception("Couldn't find CoverManager in scene.");
+        }
+
         coverPoint = coverManager.GetRandomCoverPoint();
         oldCoverPoint = coverPoint;
 
@@ -144,19 +153,18 @@ public class Kaiju : MonoBehaviour
 
         // Update Lean
         else if (state == State.LEAN) {
-
-            // Now we are always at the lean offset - close to the building, so we don't have a special state for it.
+            
         }
 
         // Update slide
-        else if (state == State.SLIDE) {
+        else if (state == State.SLIDE_NEAR || state == State.SLIDE_LEFT || state == State.SLIDE_RIGHT || state == State.SLIDE_BACK) {
 
             UpdateLean();
             UpdateSlide();
 
             if (UpdateTransitionTime(State.STAND)) {
                 //coverPoint = targetCoverPoint;
-
+                
                 targetCoverPoint = null;
 
                 // If this is a corner, keep going.
@@ -167,6 +175,9 @@ public class Kaiju : MonoBehaviour
                     else if (moveDir.x > 0) {
                         MoveToCoverRight(false);
                     }
+                }
+                else {
+                    animator.SetBool("Stand", true);
                 }
 
                 moveDir.x = 0.0f;
@@ -210,7 +221,9 @@ public class Kaiju : MonoBehaviour
 
         // Mesh.
         MoveRoot();
-        
+
+
+        UpdateAnimations();
 
         // Apply any active scale lerp.
         if (scaleLength != 0) {
@@ -222,8 +235,31 @@ public class Kaiju : MonoBehaviour
         }
     }
 
+    void UpdateLeanAnim() {
+
+        if (coverPoint.coverType == CoverPoint.CoverType.CORNER)
+            return;
+
+        animator.SetBool("Lean Left", false);
+        animator.SetBool("Lean Right", false);
+
+        // Lean left.
+        if (desiredDir.x < 0.0f) {
+            if (state != State.SLIDE_LEFT && state != State.SLIDE_RIGHT)
+                animator.SetBool("Lean Right", true);
+        }
+
+        // Lean right.
+        else if (desiredDir.x > 0.0f) {
+            if (state != State.SLIDE_LEFT && state != State.SLIDE_RIGHT)
+                animator.SetBool("Lean Left", true);
+        }
+    }
+
     // Leaning left / right away from an "anchor" cover point.
     void UpdateLean() {
+
+        UpdateLeanAnim();
 
         // Assume we want to be at the cover point.
         targetPosition = coverPoint.transform.position;
@@ -233,12 +269,14 @@ public class Kaiju : MonoBehaviour
             return;
 
         // Lean left.
-        if (desiredDir.x < 0.0f)
+        if (desiredDir.x < 0.0f) {
             targetPosition = leftLeanPosition;
+        }
 
         // Lean right.
-        else if (desiredDir.x > 0.0f)
+        else if (desiredDir.x > 0.0f) {
             targetPosition = rightLeanPosition;
+        }
     }
 
     // Sliding left / right away from the current transform toward a corner cover point, or "lean" target (from UpdateLean).
@@ -318,7 +356,7 @@ public class Kaiju : MonoBehaviour
 
         // Calculate left lean position relative to left cover point.
         Vector3 toLeft = leftCoverPoint.transform.position - coverPoint.transform.position;
-        toLeft *= 0.25f;
+        toLeft *= 0.1f;// 25f;
 
         leftLeanPosition = coverPoint.transform.position + toLeft;
         rightLeanPositionValid = true;
@@ -326,7 +364,7 @@ public class Kaiju : MonoBehaviour
         // Calculate right lean position relative to right cover point.
         CoverPoint rightCoverPoint = coverManager.FindRightCover(coverPoint, false);
         Vector3 toRight = rightCoverPoint.transform.position - coverPoint.transform.position;
-        toRight *= 0.25f;
+        toRight *= 0.1f;// 25f;
 
         rightLeanPosition = coverPoint.transform.position + toRight;
     }
@@ -355,7 +393,7 @@ public class Kaiju : MonoBehaviour
         coverPoint = candidateCoverPoint;
         CalculateLeanPoints();
         
-        StartSlide(far);
+        StartSlide(far, far ? State.SLIDE_LEFT : State.SLIDE_NEAR);
 
         return true;
     }
@@ -370,7 +408,7 @@ public class Kaiju : MonoBehaviour
         coverPoint = candidateCoverPoint;
         CalculateLeanPoints();
         
-        StartSlide(far);
+        StartSlide(far, far ? State.SLIDE_RIGHT : State.SLIDE_NEAR);
         return true;
     }
 
@@ -384,7 +422,7 @@ public class Kaiju : MonoBehaviour
         coverPoint = candidateCoverPoint;
         CalculateLeanPoints();
         
-        StartSlide(true);
+        StartSlide(true, State.SLIDE_BACK);
         return true;
     }
 
@@ -414,17 +452,32 @@ public class Kaiju : MonoBehaviour
         transitionLength = LEAN_TO_STAND_LENGTH;
     }
 
-    void StartSlide(bool far) {
+    void StartSlide(bool far, State newState) {
 
-        state = State.SLIDE;
+        state = newState;
 
         transitionTime = 0.0f;
 
         if (far) {
-            transitionLength = JUMP_LENGTH;
+            transitionLength = SLIDE_LENGTH;// JUMP_LENGTH;
         }
         else {
             transitionLength = SLIDE_LENGTH;
+        }
+
+        animator.SetBool("Lean Left", false);
+        animator.SetBool("Lean Right", false);
+        animator.SetBool("Stand", false);
+
+        if (far) {
+            // Only use the slide animations for far slides.
+            // Leans will work for near slides.
+            if (state == State.SLIDE_LEFT)
+                animator.SetTrigger("Slide Right");
+            else if (state == State.SLIDE_RIGHT)
+                animator.SetTrigger("Slide Left");
+            else if (state == State.SLIDE_BACK)
+                animator.SetTrigger("Slide Back");
         }
     }
 
@@ -550,5 +603,12 @@ public class Kaiju : MonoBehaviour
 
     public bool GetCanMove() {
         return canMove;
+    }
+
+    void UpdateAnimations() {
+
+
+
+
     }
 }
