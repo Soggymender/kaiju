@@ -24,8 +24,8 @@ public class Tricycle : MonoBehaviour
     public Stamina stamina;
 
     const float JUMP_TURN_SPEED = 4.5f;
-    const float MAX_SPEED = 10.0f;
-    const float SPRINT_SPEED = 12.5f;
+    const float MAX_SPEED = 9.0f;
+    const float SPRINT_SPEED = 11.5f;
     public float maxSpeed = MAX_SPEED;
 
     const float ACCELERATION = MAX_SPEED * 2.0f;
@@ -70,15 +70,15 @@ public class Tricycle : MonoBehaviour
     }
 
     void Start() {
-        
+
         //this plays the movement loop at start. 
         //it will always be playing but the player input inc/dec the volume <-- can be improved later
         if (as_Wheels_Rolling == null)
             as_Wheels_Rolling = gameObject.AddComponent<AudioSource>();
-            as_Wheels_Rolling.clip = ac_RollingLoop;
-            as_Wheels_Rolling.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
-            as_Wheels_Rolling.loop = true;
-            as_Wheels_Rolling.Play();
+        as_Wheels_Rolling.clip = ac_RollingLoop;
+        as_Wheels_Rolling.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
+        as_Wheels_Rolling.loop = true;
+        as_Wheels_Rolling.Play();
 
 
 
@@ -87,16 +87,13 @@ public class Tricycle : MonoBehaviour
 
         if (as_WheelsScraping == null)
             as_Jump = gameObject.AddComponent<AudioSource>();
-            as_WheelsScraping = gameObject.AddComponent<AudioSource>();
-            as_WheelsScraping.clip = ac_DriftingLoop;
-            as_WheelsScraping.Play();
-            as_WheelsScraping.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
-            as_WheelsScraping.loop = true;
-            as_WheelsScraping.pitch = 1.5f;
-            as_WheelsScraping.volume = 0f;
-
-
-
+        as_WheelsScraping = gameObject.AddComponent<AudioSource>();
+        as_WheelsScraping.clip = ac_DriftingLoop;
+        as_WheelsScraping.Play();
+        as_WheelsScraping.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
+        as_WheelsScraping.loop = true;
+        as_WheelsScraping.pitch = 1.5f;
+        as_WheelsScraping.volume = 0f;
     }
 
     void Update() {
