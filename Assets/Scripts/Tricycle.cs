@@ -27,6 +27,10 @@ public class Tricycle : MonoBehaviour
     const float MAX_SPEED = 10.0f;
     const float SPRINT_SPEED = 12.5f;
     public float maxSpeed = MAX_SPEED;
+
+    const float ACCELERATION = MAX_SPEED * 2.0f;
+    const float DECCELERATION = MAX_SPEED / 2.0f;
+
     public float maxTurn = 90.0f;
     public float jumpSpeed = 5.0f;
     public float gravity = 9.6f;
@@ -35,10 +39,10 @@ public class Tricycle : MonoBehaviour
     //float speedBoostLength = 1.0f;
     float speedBoostTime = 0.0f;
 
-    float moveTime = 0.0f;
+    float timeSinceLastDrift = 0.0f;
     float driftTime = 0.0f;
-    float driftHeadingOffset = 0.0f;
-    float maxDriftHeadingOffset = 45.0f;
+    float twist = 0.0f;
+    float maxTwist = 45.0f;
 
     CharacterController characterController;
     public Vector3 moveDirection = Vector3.zero;
@@ -99,34 +103,17 @@ public class Tricycle : MonoBehaviour
 
         isGrounded = characterController.isGrounded;
 
-//        if (!canMove) {
-  //          curSpeed = 0.0f;
-    //        moveDirection = Vector3.zero;
-      //  }
+        //        if (!canMove) {
+        //          curSpeed = 0.0f;
+        //        moveDirection = Vector3.zero;
+        //  }
 
-        // Instant acceleration, but coast to a stop unless braking.
-        if (!canMove || !Input.GetButton(controls.vertical)) {
-
-            if (curSpeed > 0.0f) {
-                curSpeed -= Time.deltaTime * 5.0f;
-
-                if (curSpeed < 0.0f)
-                    curSpeed = 0.0f;
-
-            }
-            else if (curSpeed < 0.0f) {
-                curSpeed += Time.deltaTime * 5.0f;
-
-                if (curSpeed > 0.0f)
-                    curSpeed = 0.0f;
-            }
-        }
-        else {
-            curSpeed = canMove ? maxSpeed * Input.GetAxis(controls.vertical) : 0;
-        }
+        UpdateSpeed();
 
         curTurn = canMove ? maxTurn * Input.GetAxis(controls.horizontal) : 0;
 
+        UpdateTwist();
+        
         if (isGrounded && canMove) {
 
             if (isJumping) {
@@ -151,7 +138,7 @@ public class Tricycle : MonoBehaviour
 
             else {
                 as_WheelsScraping.volume = 0f;
-                moveTime += Time.deltaTime;
+                timeSinceLastDrift += Time.deltaTime;
 
                 Vector3 forward = transform.TransformDirection(Vector3.forward);
 
@@ -161,12 +148,6 @@ public class Tricycle : MonoBehaviour
 
                     moveDirection += forward * curSpeed * 0.25f;
                     speedBoostTime -= Time.deltaTime;
-                }
-
-                // Apply some funky mesh twisting to make it feel more cooler.
-                if (!Mathf.Approximately(driftHeadingOffset, 0.0f)) {
-                    
-                    driftHeadingOffset = Mathf.Lerp(driftHeadingOffset, 0.0f, moveTime / 2.0f);
                 }
             }
 
@@ -210,19 +191,76 @@ public class Tricycle : MonoBehaviour
         //}
 
         // Twist the mesh for visual effect.
-        mesh.transform.localRotation = Quaternion.Euler(0.0f, driftHeadingOffset, 0.0f);
+        mesh.transform.localRotation = Quaternion.Euler(0.0f, twist, 0.0f);
 
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
+    void UpdateSpeed() {
+
+        float targetSpeed = 0.0f;
+        float acceleration = 0.0f;
+
+        if (isJumping) {
+
+            targetSpeed = curSpeed;
+       
+        } else if (!canMove || !Input.GetButton(controls.vertical)) {
+
+            targetSpeed = 0.0f;
+            acceleration = DECCELERATION;
+        }
+        else {
+            if (canMove) {
+
+                // Accelerate toward target speed.
+                targetSpeed = maxSpeed * Input.GetAxis(controls.vertical);
+                acceleration = ACCELERATION;
+            }
+        }
+
+        curSpeed = Accelerate(curSpeed, acceleration, targetSpeed);
+    }
+
+    void UpdateTwist() {
+
+        
+        // Apply some funky mesh twisting to make it feel more cooler.
+        float dir = curTurn < 0 ? -1.0f : 1.0f;
+
+        if (drifting)
+            twist = Accelerate(twist, maxTwist * 2.0f, dir * maxTwist);
+        else
+            twist = Accelerate(twist, maxTwist * 8.0f, 0.0f);
+    }
+
+    float Accelerate(float curValue, float acceleration, float targetValue) {
+
+        float newValue = curValue;
+
+        // Accelerate toward target speed.
+        if (targetValue > curValue) {
+            newValue += acceleration * Time.deltaTime;
+            if (newValue > targetValue)
+                newValue = targetValue;
+        }
+        else if (targetValue < newValue) {
+            newValue -= acceleration * Time.deltaTime;
+            if (newValue < targetValue)
+                newValue = targetValue;
+        }
+
+        return newValue;
+    }
+    
     void UpdateStartJump() {
 
         if (Input.GetButtonDown(controls.jump) && canMove) {
             moveDirection.y = jumpSpeed;
 
             isJumping = true;
-            StopDrifting(false);
+           // StopDrifting(false);
 
             jumpDir = curTurn; // Track this so we don't drift in the opposite direction of the jump. Feels bad.
 
@@ -284,7 +322,7 @@ public class Tricycle : MonoBehaviour
         if (!drifting)
             return;
 
-        moveTime = 0.0f;
+        //timeSinceLastDrift = 0.0f;
 
         // If stop turning.
         if (Mathf.Abs(curTurn) < maxTurn) {
@@ -299,12 +337,6 @@ public class Tricycle : MonoBehaviour
         }
 
         driftTime += Time.deltaTime;
-
-        // Apply some funky mesh twisting to make it feel more cooler.
-        float dir = curTurn < 0 ? -1.0f : 1.0f;
-
-        // Lets cheese the interpolation function to get a nice lazy ease-in.
-        driftHeadingOffset = Mathf.Lerp(driftHeadingOffset * 0.5f, maxDriftHeadingOffset * dir, driftTime / 1.0f);
 
         // Actually calculate the drift velocity.
         Vector3 forward = transform.TransformDirection(Vector3.forward);
@@ -321,7 +353,7 @@ public class Tricycle : MonoBehaviour
         drifting = true;
         driftTime = 0.0f;
 
-        moveTime = 0.0f;
+        timeSinceLastDrift = 0.0f;
 
         stamina.ForceHide(true);
     }
@@ -329,6 +361,7 @@ public class Tricycle : MonoBehaviour
     void StopDrifting(bool speedBoost) {
 
         drifting = false;
+        timeSinceLastDrift = 0.0f;
 
         if (speedBoost) {
             // Grant speed boost.
@@ -339,7 +372,7 @@ public class Tricycle : MonoBehaviour
         else {
             speedBoostTime = 0.0f;
         }
-
+        
         // If they've been holding sprint, ignore it.
         requireSprintRepress = true;
         stamina.ForceHide(false);
