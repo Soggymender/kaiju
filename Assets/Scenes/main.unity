@@ -1943,7 +1943,7 @@ MonoBehaviour:
   rotationDamping: 4
   minKaijuDistance: 35
   maxKaijuDistance: 35
-  nearYOffset: -0.5
+  nearYOffset: 0
   nearHeight: -1.5
   kaijuGo: {fileID: 567986716}
 --- !u!1001 &976959974

@@ -16,8 +16,17 @@ public class Stamina : MonoBehaviour {
     float fullLength = 2.0f;
     float fullTime = 0.0f;
 
+    bool forceHide = true;
+
     [Range(0, 1)]
     public float value = 0;
+
+    private void Start() {
+
+        // Fill and hide for round start.
+        value = 1.0f;
+        fullTime = fullLength;
+    }
 
     void Update() {
 
@@ -57,8 +66,8 @@ public class Stamina : MonoBehaviour {
         }
 
         image.fillAmount = value;
-
-        mask.gameObject.SetActive(wantVisible);
+        
+        mask.gameObject.SetActive(wantVisible && !forceHide);
     }
 
     public void SetDischarge(bool discharge) {
@@ -67,6 +76,14 @@ public class Stamina : MonoBehaviour {
         
     }
 
+    public void ForceHide(bool hide) {
+
+        forceHide = hide;
+
+        // Try to keep this hidden during sprint -> drift -> jump when it would normally be recharging and visible for a few seconds.
+        fullTime = fullLength;
+    }
+    
     public float GetValue() {
         return value;
     }

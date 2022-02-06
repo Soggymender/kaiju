@@ -24,8 +24,8 @@ public class Tricycle : MonoBehaviour
     public Stamina stamina;
 
     const float JUMP_TURN_SPEED = 4.5f;
-    const float MAX_SPEED = 7.5f;
-    const float SPRINT_SPEED = 10.0f;
+    const float MAX_SPEED = 10.0f;
+    const float SPRINT_SPEED = 12.5f;
     public float maxSpeed = MAX_SPEED;
     public float maxTurn = 90.0f;
     public float jumpSpeed = 5.0f;
@@ -39,7 +39,6 @@ public class Tricycle : MonoBehaviour
     float driftTime = 0.0f;
     float driftHeadingOffset = 0.0f;
     float maxDriftHeadingOffset = 45.0f;
-
 
     CharacterController characterController;
     public Vector3 moveDirection = Vector3.zero;
@@ -134,17 +133,12 @@ public class Tricycle : MonoBehaviour
                 isJumping = false;
 
                 // If hard turn while landing, power slide.
-                if (curSpeed == maxSpeed && Mathf.Abs(curTurn) >= maxTurn * 0.66f) {
+                if (curSpeed == maxSpeed && Mathf.Abs(curTurn) >= maxTurn) {
 
                     // If jump was a left turn, drift has to be a left turn.
                     if ((curTurn < 0.0f && jumpDir < 0) || curTurn > 0.0f && jumpDir > 0) {
 
-
-                        drifting = true;
-                        driftTime = 0.0f;
-
-                        moveTime = 0.0f;
-
+                        StartDrifting();
                     }
                 }
             }
@@ -195,7 +189,7 @@ public class Tricycle : MonoBehaviour
         moveDirection.y -= gravity * Time.deltaTime;
         
         // Player and Camera rotation
-        if (canMove) {
+        //if (canMove) {
 
             // Choose effective speed.
             float effectiveSpeed = curSpeed;
@@ -213,7 +207,7 @@ public class Tricycle : MonoBehaviour
                 float turnSpeedScalar = effectiveSpeed / maxSpeed;
                 transform.eulerAngles = new Vector2(0, transform.eulerAngles.y + (effectiveTurn * turnSpeedScalar * Time.deltaTime));
             }
-        }
+        //}
 
         // Twist the mesh for visual effect.
         mesh.transform.localRotation = Quaternion.Euler(0.0f, driftHeadingOffset, 0.0f);
@@ -228,7 +222,7 @@ public class Tricycle : MonoBehaviour
             moveDirection.y = jumpSpeed;
 
             isJumping = true;
-            drifting = false;
+            StopDrifting(false);
 
             jumpDir = curTurn; // Track this so we don't drift in the opposite direction of the jump. Feels bad.
 
@@ -244,7 +238,7 @@ public class Tricycle : MonoBehaviour
             requireSprintRepress = false;
 
         // Holding sprint, and accelerating forward.
-        if (Input.GetButton(controls.sprint) && !requireSprintRepress && Input.GetButton(controls.vertical) && Input.GetAxis(controls.vertical) > 0.0f) {
+        if (!drifting && Input.GetButton(controls.sprint) && !requireSprintRepress && Input.GetButton(controls.vertical) && Input.GetAxis(controls.vertical) > 0.0f) {
 
             float staminaValue = stamina.GetValue();
 
@@ -293,22 +287,14 @@ public class Tricycle : MonoBehaviour
         moveTime = 0.0f;
 
         // If stop turning.
-        if (Mathf.Abs(curTurn) <= 5.0f) {
-            drifting = false;
-
-            // Grant speed boost.
-            speedBoostTime = driftTime;
-            if (speedBoostTime > 3.0f)
-                speedBoostTime = 3.0f;
-
+        if (Mathf.Abs(curTurn) < maxTurn) {
+            StopDrifting(true);
             return;
         }
 
         // If stop going.
         if (!Input.GetButton(controls.vertical)) {//curSpeed <= 0.0f) {
-            drifting = false;
-            speedBoostTime = 0.0f;
-
+            StopDrifting(false);
             return;
         }
 
@@ -330,6 +316,35 @@ public class Tricycle : MonoBehaviour
             moveDirection = Vector3.Slerp(forward, -right, 0.5f) * curSpeed;
     }
 
+    void StartDrifting() {
+
+        drifting = true;
+        driftTime = 0.0f;
+
+        moveTime = 0.0f;
+
+        stamina.ForceHide(true);
+    }
+
+    void StopDrifting(bool speedBoost) {
+
+        drifting = false;
+
+        if (speedBoost) {
+            // Grant speed boost.
+            speedBoostTime = driftTime;
+            if (speedBoostTime > 3.0f)
+                speedBoostTime = 3.0f;
+        }
+        else {
+            speedBoostTime = 0.0f;
+        }
+
+        // If they've been holding sprint, ignore it.
+        requireSprintRepress = true;
+        stamina.ForceHide(false);
+    }
+
     void FixedUpdate() {
 
         // Move the controller
@@ -345,6 +360,11 @@ public class Tricycle : MonoBehaviour
 
     public void SetPlayerControls(bool canMove, PlayerControls newControls) {
         this.canMove = canMove;
+
+        if (!canMove) {
+            StopSprinting();
+            StopDrifting(false);
+        }
 
         if (newControls != null)
             controls = newControls;
