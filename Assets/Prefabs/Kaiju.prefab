@@ -143,6 +143,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9167692796025928499}
+  - component: {fileID: 5070961925937913012}
   m_Layer: 7
   m_Name: Root
   m_TagString: Untagged
@@ -166,6 +167,20 @@ Transform:
   m_Father: {fileID: 9167692797293527331}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &5070961925937913012
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9167692796025928498}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 3
+  m_Height: 14
+  m_Direction: 1
+  m_Center: {x: 0, y: 7, z: 0}
 --- !u!1 &9167692796707156990
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,7 +350,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9167692797293527331}
   - component: {fileID: 9167692797293527328}
-  - component: {fileID: 1315541164}
   m_Layer: 7
   m_Name: Kaiju
   m_TagString: Untagged
@@ -375,28 +389,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controls: {fileID: 0}
+  magnifier: {fileID: 0}
   coverOffset: {fileID: 9167692797119831085}
   root: {fileID: 9167692796025928498}
   desiredDir: {x: 0, y: 0}
   moveDir: {x: 0, y: 0}
---- !u!143 &1315541164
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9167692797293527330}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &190433284
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -87,6 +87,8 @@ public class Kaiju : MonoBehaviour
 
     CoverManager coverManager = null;
 
+    bool monsterVision = true;
+
     Animator animator = null;
 
     // Start is called before the first frame update
@@ -111,6 +113,8 @@ public class Kaiju : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdateMonsterVision();
+
         // Update desired direction and jump hold / release.
         if (canMove) {
 
@@ -233,6 +237,15 @@ public class Kaiju : MonoBehaviour
             root.transform.localScale = new Vector3(1.0f, yScale, 1.0f);
             
         }
+    }
+
+    void UpdateMonsterVision() {
+
+        // Can't toggle off right now because when kid is not in view, there's no indicator that monster vision is on. Need an open / closed eye icon.
+        //if (Input.GetButtonDown(controls.sprint))
+        //    monsterVision = !monsterVision;
+
+        magnifier.Show(canMove && monsterVision);
     }
 
     void UpdateLeanAnim() {
@@ -597,8 +610,6 @@ public class Kaiju : MonoBehaviour
 
         if (newControls != null)
             controls = newControls;
-
-        magnifier.Show(canMove);
     }
 
     public bool GetCanMove() {

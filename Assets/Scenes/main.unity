@@ -4149,6 +4149,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1615689032124033365, guid: ac78e63528438534384e67754619012f, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2128203244232689693, guid: ac78e63528438534384e67754619012f, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2128203244232689693, guid: ac78e63528438534384e67754619012f, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.35
@@ -4217,8 +4225,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tricycle
       objectReference: {fileID: 0}
+    - target: {fileID: 7552392139814574463, guid: ac78e63528438534384e67754619012f, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7552392139814574463, guid: ac78e63528438534384e67754619012f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.75
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac78e63528438534384e67754619012f, type: 3}
+--- !u!4 &3320228649859087380 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7552392139814574463, guid: ac78e63528438534384e67754619012f, type: 3}
+  m_PrefabInstance: {fileID: 3320228649859087379}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5347141229639046520
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4241,7 +4262,7 @@ PrefabInstance:
     - target: {fileID: 170205274, guid: 8273366197edb5342906630963d99fa6, type: 3}
       propertyPath: kidTrans
       value: 
-      objectReference: {fileID: 1166631751}
+      objectReference: {fileID: 3320228649859087380}
     - target: {fileID: 170205274, guid: 8273366197edb5342906630963d99fa6, type: 3}
       propertyPath: canvasRect
       value: 

@@ -27,28 +27,58 @@ public class Magnifier : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!show)
+        if (!show) {
+            images.SetActive(false);
             return;
+        }
 
         bool kidVisible = false;
 
+        // Find the position of Kid on the screen.
         Vector3 screenPos = farCam.WorldToScreenPoint(kidTrans.position);
 
         if (screenPos.z > 0 && screenPos.x > 0 && screenPos.x < farCam.pixelWidth && screenPos.y > 0 && screenPos.y < farCam.pixelHeight) {
             kidVisible = true;    
         }
 
+        if (kidVisible) {
+
+            // Check line of site.
+            screenPos.Set(screenPos.x, screenPos.y, 2.5f);
+
+            Vector3 startPos = farCam.ScreenToWorldPoint(screenPos);
+            Vector3 endPos = kidTrans.position;
+
+            RaycastHit hit;
+            Vector3 dir = kidTrans.position - startPos;
+
+            // Don't collide with characters.
+            //LayerMask characterLM = LayerMask.NameToLayer("Character");
+
+            if (Physics.SphereCast(startPos, 0.5f, dir, out hit, dir.magnitude + 1.0f)) {
+
+                if (hit.transform.gameObject.GetComponent<Tricycle>())
+                    kidVisible = true;
+                else
+                    kidVisible = false;
+
+                // Position and orient the near camera for this viewpoint.
+                dir = kidTrans.position - farCam.transform.position;
+                dir.Normalize();
+
+                closeCam.transform.position = kidTrans.position + (-dir * 1.75f);
+                closeCam.transform.LookAt(kidTrans);
+
+
+            }
+            else {
+                kidVisible = false;
+            }
+        }
+
         images.SetActive(show && kidVisible);
 
-        /*
-        Vector2 result;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas., screenPos, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : farCam, out result);
-        return canvas.transform.TransformPoint(result);
-        */
-      //  screenPos.x -= canvasRect.sizeDelta.x * 0.5f;
-        //screenPos.y -= canvasRect.sizeDelta.y * 0.5f;
         screenPos.z = transform.localPosition.z;
-
         transform.position = screenPos;
 
     
@@ -58,18 +88,4 @@ public class Magnifier : MonoBehaviour
 
         this.show = show;
     }
-
-
-
-    /*
-    var hit : RaycastHit;
-var rayDirection = player.position - transform.position;
-if (Physics.Raycast (transform.position, rayDirection, hit)) {
-if (hit.transform == player) {
-// enemy can see the player!
-} else {
-// there is something obstructing the view
-}
-}
- */ 
 }
