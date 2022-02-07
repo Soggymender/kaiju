@@ -496,7 +496,7 @@ public class Kaiju : MonoBehaviour
 
     void StartSlide(bool far, State newState) {
 
-        if (stamina
+        //if (stamina
 
         state = newState;
 
