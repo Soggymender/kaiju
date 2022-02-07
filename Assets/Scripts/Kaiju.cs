@@ -34,6 +34,7 @@ public class Kaiju : MonoBehaviour
 
     Vector3 slideVelocity;
 
+    public KaijuCamera camera = null;
     public Magnifier magnifier = null;
     
     // LEAN LEFT / RIGHT
@@ -278,17 +279,25 @@ public class Kaiju : MonoBehaviour
         targetPosition = coverPoint.transform.position;
 
         // There is no lean control at corners.
-        if (coverPoint.coverType == CoverPoint.CoverType.CORNER)
+        if (coverPoint.coverType == CoverPoint.CoverType.CORNER) {
+            camera.SetLeanDirection(KaijuCamera.LeanDirection.NONE);
             return;
+        }
 
         // Lean left.
         if (desiredDir.x < 0.0f) {
             targetPosition = leftLeanPosition;
+            camera.SetLeanDirection(KaijuCamera.LeanDirection.LEFT);
         }
 
         // Lean right.
         else if (desiredDir.x > 0.0f) {
             targetPosition = rightLeanPosition;
+            camera.SetLeanDirection(KaijuCamera.LeanDirection.RIGHT);
+        }
+
+        else {
+            camera.SetLeanDirection(KaijuCamera.LeanDirection.NONE);
         }
     }
 
@@ -369,17 +378,17 @@ public class Kaiju : MonoBehaviour
 
         // Calculate left lean position relative to left cover point.
         Vector3 toLeft = leftCoverPoint.transform.position - coverPoint.transform.position;
-        toLeft *= 0.1f;// 25f;
 
-        leftLeanPosition = coverPoint.transform.position + toLeft;
+        leftLeanPosition = coverPoint.transform.position + (toLeft * 0.1f);
         rightLeanPositionValid = true;
 
         // Calculate right lean position relative to right cover point.
         CoverPoint rightCoverPoint = coverManager.FindRightCover(coverPoint, false);
         Vector3 toRight = rightCoverPoint.transform.position - coverPoint.transform.position;
-        toRight *= 0.1f;// 25f;
 
-        rightLeanPosition = coverPoint.transform.position + toRight;
+        rightLeanPosition = coverPoint.transform.position + (toRight * 0.1f);
+
+        //camera.SetLeanPositions(leftCoverPoint.transform.position - coverPoint.transform.position, rightCoverPoint.transform.position - coverPoint.transform.position);
     }
 
     void WarpToCoverPoint(CoverPoint newCoverPoint) {
