@@ -1516,8 +1516,30 @@ MonoBehaviour:
   controls: {fileID: 0}
   coverOffset: {fileID: 9167692797119831085}
   root: {fileID: 9167692796025928498}
+<<<<<<< Updated upstream
 --- !u!143 &1315541164
 CharacterController:
+=======
+  desiredDir: {x: 0, y: 0}
+  moveDir: {x: 0, y: 0}
+  Mixer: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
+  ac_PeekClips:
+  - {fileID: 8300000, guid: 0b8cb7411bbd3954ab0c47a0b141b43f, type: 3}
+  - {fileID: 8300000, guid: 78c1026eabd2a054b96f025fb3eec82e, type: 3}
+  ac_PeekReturnClips:
+  - {fileID: 8300000, guid: 2e8e5b40e702cd047b78987f877fe315, type: 3}
+  - {fileID: 8300000, guid: bcd208e5e2e42c143ae5789c5affcc57, type: 3}
+  ac_SlideChargeClips:
+  - {fileID: 8300000, guid: a45120f5c1f8e7546880841cc46c98bd, type: 3}
+  - {fileID: 8300000, guid: 6fc44dceb4e3dc047877055f2873c7b7, type: 3}
+  - {fileID: 8300000, guid: a7b71137098c92a48ac788c4cb411d8e, type: 3}
+  ac_SlideClips:
+  - {fileID: 8300000, guid: d2427dc568cc95a4e9d307f9d74b3e3e, type: 3}
+  - {fileID: 8300000, guid: 602fce917f0b52d4ba5a5828ca624fd6, type: 3}
+  - {fileID: 8300000, guid: e87636067992c8845903aa9404095f36, type: 3}
+--- !u!1001 &190433284
+PrefabInstance:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
