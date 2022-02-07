@@ -7,6 +7,7 @@ using UnityEngine.Audio;
 
 public class Tricycle : MonoBehaviour
 {
+    // Audio
     public AudioMixer MainMixer;
     public AudioSource as_Wheels_Rolling;
     public AudioSource as_WheelsScraping;
@@ -20,9 +21,16 @@ public class Tricycle : MonoBehaviour
 
     public PlayerControls controls;
     public GameObject mesh;
+    public Stamina stamina;
 
     const float JUMP_TURN_SPEED = 4.5f;
-    public float maxSpeed = 7.5f;
+    const float MAX_SPEED = 9.0f;
+    const float SPRINT_SPEED = 11.5f;
+    public float maxSpeed = MAX_SPEED;
+
+    const float ACCELERATION = MAX_SPEED * 2.0f;
+    const float DECCELERATION = MAX_SPEED / 2.0f;
+
     public float maxTurn = 90.0f;
     public float jumpSpeed = 5.0f;
     public float gravity = 9.6f;
@@ -31,22 +39,25 @@ public class Tricycle : MonoBehaviour
     //float speedBoostLength = 1.0f;
     float speedBoostTime = 0.0f;
 
-    float moveTime = 0.0f;
+    float timeSinceLastDrift = 0.0f;
     float driftTime = 0.0f;
-    float driftHeadingOffset = 0.0f;
-    float maxDriftHeadingOffset = 45.0f;
-
+    float twist = 0.0f;
+    float maxTwist = 45.0f;
 
     CharacterController characterController;
     public Vector3 moveDirection = Vector3.zero;
     Vector2 rotation = Vector2.zero;
 
+    bool requireSprintRepress = false;
+    bool sprinting = false;
+
     bool drifting = false;
     Vector3 driftDirection = Vector3.zero;
 
     public float curSpeed = 0.0f;
-    float curTurn = 0.0f;
+    public float curTurn = 0.0f;
     bool isJumping = false;
+    public float jumpDir = 0.0f;
 
     [HideInInspector]
     bool canMove = false;
@@ -59,70 +70,61 @@ public class Tricycle : MonoBehaviour
     }
 
     void Start() {
-        
+
         //this plays the movement loop at start. 
         //it will always be playing but the player input inc/dec the volume <-- can be improved later
         if (as_Wheels_Rolling == null)
-<<<<<<< Updated upstream
             as_Wheels_Rolling = gameObject.AddComponent<AudioSource>();
             as_Wheels_Rolling.clip = ac_RollingLoop;
             as_Wheels_Rolling.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
             as_Wheels_Rolling.loop = true;
             as_Wheels_Rolling.Play();
-=======
-        as_Wheels_Rolling = gameObject.AddComponent<AudioSource>();
-        as_Wheels_Rolling.clip = ac_RollingLoop;
-        as_Wheels_Rolling.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
-        as_Wheels_Rolling.loop = true;
-        as_Wheels_Rolling.Play();
->>>>>>> Stashed changes
-
-
+        }
 
         characterController = GetComponent<CharacterController>();
         rotation.y = transform.eulerAngles.y;
 
         if (as_WheelsScraping == null)
             as_Jump = gameObject.AddComponent<AudioSource>();
-            as_WheelsScraping = gameObject.AddComponent<AudioSource>();
-            as_WheelsScraping.clip = ac_DriftingLoop;
-            as_WheelsScraping.Play();
-            as_WheelsScraping.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
-            as_WheelsScraping.loop = true;
-            as_WheelsScraping.pitch = 1.5f;
-            as_WheelsScraping.volume = 0f;
-
-
-
+        as_WheelsScraping = gameObject.AddComponent<AudioSource>();
+        as_WheelsScraping.clip = ac_DriftingLoop;
+        as_WheelsScraping.Play();
+        as_WheelsScraping.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
+        as_WheelsScraping.loop = true;
+        as_WheelsScraping.pitch = 1.5f;
+        as_WheelsScraping.volume = 0f;
     }
 
     void Update() {
 
         isGrounded = characterController.isGrounded;
 
-        if (!canMove) {
-            curSpeed = 0.0f;
-            moveDirection = Vector3.zero;
-        }
+        //        if (!canMove) {
+        //          curSpeed = 0.0f;
+        //        moveDirection = Vector3.zero;
+        //  }
 
+        UpdateSpeed();
+
+        curTurn = canMove ? maxTurn * Input.GetAxis(controls.horizontal) : 0;
+
+        UpdateTwist();
+        
         if (isGrounded && canMove) {
 
             if (isJumping) {
                 isJumping = false;
 
                 // If hard turn while landing, power slide.
-                if (curSpeed == maxSpeed && Mathf.Abs(curTurn) >= maxTurn * 0.66f) {
+                if (curSpeed == maxSpeed && Mathf.Abs(curTurn) >= maxTurn) {
 
-                    drifting = true;
-                    driftTime = 0.0f;
+                    // If jump was a left turn, drift has to be a left turn.
+                    if ((curTurn < 0.0f && jumpDir < 0) || curTurn > 0.0f && jumpDir > 0) {
 
-                    moveTime = 0.0f;
+                        StartDrifting();
+                    }
                 }
             }
-
-            // We are grounded, so recalculate move direction based on axes
-            curSpeed = canMove ? maxSpeed * Input.GetAxis(controls.vertical) : 0;
-            curTurn = canMove ? maxTurn * Input.GetAxis(controls.horizontal) : 0;
 
             if (drifting) {
                 UpdateDrifting();
@@ -132,7 +134,7 @@ public class Tricycle : MonoBehaviour
 
             else {
                 as_WheelsScraping.volume = 0f;
-                moveTime += Time.deltaTime;
+                timeSinceLastDrift += Time.deltaTime;
 
                 Vector3 forward = transform.TransformDirection(Vector3.forward);
 
@@ -143,27 +145,13 @@ public class Tricycle : MonoBehaviour
                     moveDirection += forward * curSpeed * 0.25f;
                     speedBoostTime -= Time.deltaTime;
                 }
-
-                // Apply some funky mesh twisting to make it feel more cooler.
-                if (!Mathf.Approximately(driftHeadingOffset, 0.0f)) {
-                    
-                    driftHeadingOffset = Mathf.Lerp(driftHeadingOffset, 0.0f, moveTime / 2.0f);
-                }
             }
 
             // This is a stupid gravity hack to keep isGrounded true.
             moveDirection.y = -0.4f;
 
-            if (Input.GetButtonDown(controls.jump) && canMove) {
-                moveDirection.y = jumpSpeed;
-
-                isJumping = true;
-                drifting = false;
-
-                //this just plays the jump sfx
-                if (as_Jump != null)
-                    playRandomJump(ac_JumpClips, MainMixer, as_Jump);
-            }
+            UpdateStartJump();
+            UpdateSprint();
         }
         else {
             // this is changing decreasing the volume of the wheel sfx loop when not moving or on the ground 
@@ -178,7 +166,7 @@ public class Tricycle : MonoBehaviour
         moveDirection.y -= gravity * Time.deltaTime;
         
         // Player and Camera rotation
-        if (canMove) {
+        //if (canMove) {
 
             // Choose effective speed.
             float effectiveSpeed = curSpeed;
@@ -196,13 +184,133 @@ public class Tricycle : MonoBehaviour
                 float turnSpeedScalar = effectiveSpeed / maxSpeed;
                 transform.eulerAngles = new Vector2(0, transform.eulerAngles.y + (effectiveTurn * turnSpeedScalar * Time.deltaTime));
             }
-        }
+        //}
 
         // Twist the mesh for visual effect.
-        mesh.transform.localRotation = Quaternion.Euler(0.0f, driftHeadingOffset, 0.0f);
+        mesh.transform.localRotation = Quaternion.Euler(0.0f, twist, 0.0f);
 
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
+    }
+
+    void UpdateSpeed() {
+
+        float targetSpeed = 0.0f;
+        float acceleration = 0.0f;
+
+        if (isJumping) {
+
+            targetSpeed = curSpeed;
+       
+        } else if (!canMove || !Input.GetButton(controls.vertical)) {
+
+            targetSpeed = 0.0f;
+            acceleration = DECCELERATION;
+        }
+        else {
+            if (canMove) {
+
+                // Accelerate toward target speed.
+                targetSpeed = maxSpeed * Input.GetAxis(controls.vertical);
+                acceleration = ACCELERATION;
+            }
+        }
+
+        curSpeed = Accelerate(curSpeed, acceleration, targetSpeed);
+    }
+
+    void UpdateTwist() {
+
+        
+        // Apply some funky mesh twisting to make it feel more cooler.
+        float dir = curTurn < 0 ? -1.0f : 1.0f;
+
+        if (drifting)
+            twist = Accelerate(twist, maxTwist * 2.0f, dir * maxTwist);
+        else
+            twist = Accelerate(twist, maxTwist * 8.0f, 0.0f);
+    }
+
+    float Accelerate(float curValue, float acceleration, float targetValue) {
+
+        float newValue = curValue;
+
+        // Accelerate toward target speed.
+        if (targetValue > curValue) {
+            newValue += acceleration * Time.deltaTime;
+            if (newValue > targetValue)
+                newValue = targetValue;
+        }
+        else if (targetValue < newValue) {
+            newValue -= acceleration * Time.deltaTime;
+            if (newValue < targetValue)
+                newValue = targetValue;
+        }
+
+        return newValue;
+    }
+    
+    void UpdateStartJump() {
+
+        if (Input.GetButtonDown(controls.jump) && canMove) {
+            moveDirection.y = jumpSpeed;
+
+            isJumping = true;
+           // StopDrifting(false);
+
+            jumpDir = curTurn; // Track this so we don't drift in the opposite direction of the jump. Feels bad.
+
+            //this just plays the jump sfx
+            if (as_Jump != null)
+                playRandomJump(ac_JumpClips, MainMixer, as_Jump);
+        }
+    }
+
+    void UpdateSprint() {
+
+        if (requireSprintRepress && Input.GetButtonDown(controls.sprint))
+            requireSprintRepress = false;
+
+        // Holding sprint, and accelerating forward.
+        if (!drifting && Input.GetButton(controls.sprint) && !requireSprintRepress && Input.GetButton(controls.vertical) && Input.GetAxis(controls.vertical) > 0.0f) {
+
+            float staminaValue = stamina.GetValue();
+
+            if (!sprinting && staminaValue > 0.25f) {
+
+                StartSprinting();
+            }
+            else {
+
+                if (staminaValue == 0.0f) {
+                    StopSprinting();
+                    requireSprintRepress = true;
+                }
+            }
+        }
+        else {
+
+            if (sprinting) {
+
+                StopSprinting();
+            }
+        }
+    }
+
+    void StartSprinting() {
+
+        stamina.SetDischarge(true);
+        maxSpeed = SPRINT_SPEED;
+
+        sprinting = true;
+    }
+
+    void StopSprinting() {
+
+        stamina.SetDischarge(false);
+        maxSpeed = MAX_SPEED;
+
+        sprinting = false;
     }
 
     void UpdateDrifting() {
@@ -210,35 +318,21 @@ public class Tricycle : MonoBehaviour
         if (!drifting)
             return;
 
-        moveTime = 0.0f;
+        //timeSinceLastDrift = 0.0f;
 
         // If stop turning.
-        if (Mathf.Abs(curTurn) <= 5.0f) {
-            drifting = false;
-
-            // Grant speed boost.
-            speedBoostTime = driftTime;
-            if (speedBoostTime > 3.0f)
-                speedBoostTime = 3.0f;
-
+        if (Mathf.Abs(curTurn) < maxTurn) {
+            StopDrifting(true);
             return;
         }
 
         // If stop going.
-        if (curSpeed <= 0.0f) {
-            drifting = false;
-            speedBoostTime = 0.0f;
-
+        if (!Input.GetButton(controls.vertical)) {//curSpeed <= 0.0f) {
+            StopDrifting(false);
             return;
         }
 
         driftTime += Time.deltaTime;
-
-        // Apply some funky mesh twisting to make it feel more cooler.
-        float dir = curTurn < 0 ? -1.0f : 1.0f;
-
-        // Lets cheese the interpolation function to get a nice lazy ease-in.
-        driftHeadingOffset = Mathf.Lerp(driftHeadingOffset * 0.5f, maxDriftHeadingOffset * dir, driftTime / 1.0f);
 
         // Actually calculate the drift velocity.
         Vector3 forward = transform.TransformDirection(Vector3.forward);
@@ -248,6 +342,36 @@ public class Tricycle : MonoBehaviour
             moveDirection = Vector3.Slerp(forward, right, 0.5f) * curSpeed;
         else
             moveDirection = Vector3.Slerp(forward, -right, 0.5f) * curSpeed;
+    }
+
+    void StartDrifting() {
+
+        drifting = true;
+        driftTime = 0.0f;
+
+        timeSinceLastDrift = 0.0f;
+
+        stamina.ForceHide(true);
+    }
+
+    void StopDrifting(bool speedBoost) {
+
+        drifting = false;
+        timeSinceLastDrift = 0.0f;
+
+        if (speedBoost) {
+            // Grant speed boost.
+            speedBoostTime = driftTime;
+            if (speedBoostTime > 3.0f)
+                speedBoostTime = 3.0f;
+        }
+        else {
+            speedBoostTime = 0.0f;
+        }
+        
+        // If they've been holding sprint, ignore it.
+        requireSprintRepress = true;
+        stamina.ForceHide(false);
     }
 
     void FixedUpdate() {
@@ -266,6 +390,11 @@ public class Tricycle : MonoBehaviour
     public void SetPlayerControls(bool canMove, PlayerControls newControls) {
         this.canMove = canMove;
 
+        if (!canMove) {
+            StopSprinting();
+            StopDrifting(false);
+        }
+
         if (newControls != null)
             controls = newControls;
     }
@@ -276,4 +405,12 @@ public class Tricycle : MonoBehaviour
         as_JumpSource.outputAudioMixerGroup = mix.FindMatchingGroups("SFX_Echo")[0];
         
     }
+
+    void OnControllerColliderHit(ControllerColliderHit hit) {
+        
+        if (hit.collider.tag == "obstacle") {
+            drifting = false;
+        }
+    }
+    
 }
