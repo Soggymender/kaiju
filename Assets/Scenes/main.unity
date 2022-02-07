@@ -1196,6 +1196,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 642937125}
     - target: {fileID: 9167692797293527328, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
+      propertyPath: stamina
+      value: 
+      objectReference: {fileID: 1717395813}
+    - target: {fileID: 9167692797293527328, guid: c2cf77ac927dc5a4d85c36d09fe7b816, type: 3}
       propertyPath: controls
       value: 
       objectReference: {fileID: 7788275060138875124}
@@ -2369,14 +2373,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1099733446}
-  m_LocalRotation: {x: 0, y: 0.97236997, z: -0.23344536, w: 0}
-  m_LocalPosition: {x: 0, y: 17, z: 5.0000005}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00000059604645, y: 17, z: -0.00000023841858}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 901720176}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 27, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1108128232
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3107,6 +3111,8 @@ MonoBehaviour:
   worldAnchor: {fileID: 1224363657}
   mask: {fileID: 541025463}
   image: {fileID: 782679654}
+  depletionLength: 4
+  rechargeLength: 2
   value: 0
 --- !u!1 &1417310458
 GameObject:
@@ -3810,9 +3816,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 642937123}
-  worldAnchor: {fileID: 1224363657}
+  worldAnchor: {fileID: 1099733447}
   mask: {fileID: 96469802}
   image: {fileID: 1368640903}
+  depletionLength: 2
+  rechargeLength: 60
   value: 0
 --- !u!1001 &1731382827
 PrefabInstance:
