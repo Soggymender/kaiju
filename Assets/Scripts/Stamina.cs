@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Stamina : MonoBehaviour {
 
+    public Camera camera;
+    public Transform worldAnchor;
+
     public Image mask;
     public Image image;
 
@@ -68,6 +71,18 @@ public class Stamina : MonoBehaviour {
         image.fillAmount = value;
         
         mask.gameObject.SetActive(wantVisible && !forceHide);
+
+        // Draw the stamina over a 3D spot so it will automatically migrate during split screen.
+//        UpdatePosition();
+    }
+
+    void LateUpdate() {
+
+        // Find the position of Kid on the screen.
+        Vector3 screenPos = camera.WorldToScreenPoint(worldAnchor.position);
+
+        screenPos.z = transform.localPosition.z;
+        transform.position = screenPos;
     }
 
     public void SetDischarge(bool discharge) {
@@ -86,5 +101,13 @@ public class Stamina : MonoBehaviour {
     
     public float GetValue() {
         return value;
+    }
+
+    public void Use(float amount) {
+
+        if (value >= amount) {
+
+            value -= amount;
+        }
     }
 }

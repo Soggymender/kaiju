@@ -36,7 +36,9 @@ public class Kaiju : MonoBehaviour
 
     public KaijuCamera camera = null;
     public Magnifier magnifier = null;
-    
+    public Stamina stamina;
+
+
     // LEAN LEFT / RIGHT
     bool leftLeanPositionValid = false;
     Vector3 leftLeanPosition;
@@ -480,6 +482,8 @@ public class Kaiju : MonoBehaviour
 
     void StartSlide(bool far, State newState) {
 
+        if (stamina
+
         state = newState;
 
         transitionTime = 0.0f;
@@ -498,10 +502,12 @@ public class Kaiju : MonoBehaviour
         if (far) {
             // Only use the slide animations for far slides.
             // Leans will work for near slides.
-            if (state == State.SLIDE_LEFT)
+            if (state == State.SLIDE_LEFT) {
                 animator.SetTrigger("Slide Right");
-            else if (state == State.SLIDE_RIGHT)
+            }
+            else if (state == State.SLIDE_RIGHT) {
                 animator.SetTrigger("Slide Left");
+            }
             else if (state == State.SLIDE_BACK) {
                 yVelocity = jumpSpeed;
                 animator.SetTrigger("Jump");
