@@ -14,7 +14,7 @@ public class Kaiju : MonoBehaviour
         SLIDE_RIGHT,
         SLIDE_BACK,
         LEAP,
-        JUMP,
+        TAUNT,
 
         STAND_TO_LEAN,
         LEAN_TO_STAND
@@ -25,7 +25,7 @@ public class Kaiju : MonoBehaviour
     bool canMove = false;
 
     float yVelocity = 0.0f;
-    float jumpSpeed = 9.0f;
+    float jumpSpeed = 4.0f;
     float gravity = 9.6f;
 
     CoverPoint oldCoverPoint = null;
@@ -343,7 +343,7 @@ public class Kaiju : MonoBehaviour
         curPos.y += yVelocity * Time.deltaTime;
         if (curPos.y < transform.position.y && yVelocity < 0.0f) {
 
-            if (state == State.JUMP) {
+            if (state == State.TAUNT) {
                 state = State.STAND;
             }
 
@@ -448,11 +448,15 @@ public class Kaiju : MonoBehaviour
         return true;
     }
 
-    void StartJump() {
+    void StartTaunt() {
 
-        state = State.JUMP;
+        state = State.TAUNT;
 
-        yVelocity = jumpSpeed;
+        // Height is built in to this animation.
+        //yVelocity = jumpSpeed;
+
+        animator.SetTrigger("Taunt");
+        animator.SetBool("Stand", true);
 
         transitionTime = 0.0f;
         transitionLength = 0.0f;
@@ -498,8 +502,10 @@ public class Kaiju : MonoBehaviour
                 animator.SetTrigger("Slide Right");
             else if (state == State.SLIDE_RIGHT)
                 animator.SetTrigger("Slide Left");
-            else if (state == State.SLIDE_BACK)
-                animator.SetTrigger("Slide Back");
+            else if (state == State.SLIDE_BACK) {
+                yVelocity = jumpSpeed;
+                animator.SetTrigger("Jump");
+            }
         }
     }
 
@@ -558,7 +564,7 @@ public class Kaiju : MonoBehaviour
             // If on directional input, don't change cover.
             if (Mathf.Approximately(moveDir.magnitude, 0.0f)) {
                 // Jump in place. Taunt, destabalize kid?
-                StartJump();
+                StartTaunt();
                 
             }
             else {
