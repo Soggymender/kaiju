@@ -35,9 +35,12 @@ public class Kaiju : MonoBehaviour
 
     Vector3 slideVelocity;
 
+    public Camera kidCamera = null;
     public KaijuCamera camera = null;
     public Magnifier magnifier = null;
     public Stamina stamina;
+
+    public Chopper chopper = null;
 
 
     // LEAN LEFT / RIGHT
@@ -369,7 +372,8 @@ public class Kaiju : MonoBehaviour
         if (curPos.y < transform.position.y && yVelocity < 0.0f) {
 
             if (state == State.TAUNT) {
-                state = State.STAND;
+
+                StopTaunt();
             }
 
             curPos.y = transform.position.y;
@@ -478,13 +482,24 @@ public class Kaiju : MonoBehaviour
         state = State.TAUNT;
 
         // Height is built in to this animation.
-        //yVelocity = jumpSpeed;
+        yVelocity = 2.75f;
 
         animator.SetTrigger("Taunt");
         animator.SetBool("Stand", true);
 
         transitionTime = 0.0f;
         transitionLength = 0.0f;
+    }
+
+    void StopTaunt() {
+
+        state = State.STAND;
+
+        // Tell the helicopter.
+        chopper.SetPointOfInterest(coverPoint.transform);
+
+        kidCamera.GetComponent<CameraShake>().shakeDuration = 1.0f;
+        camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
     }
 
     void StartStandToLean() {
