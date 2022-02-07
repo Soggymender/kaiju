@@ -64,8 +64,8 @@ public class Kaiju : MonoBehaviour
 
     Vector3 lateralOffset;
 
-    const float NEAR_SLIDE_STAMINA = 0.1f;
-    const float FAR_SLIDE_STAMINA = 0.25f;
+    const float NEAR_SLIDE_STAMINA = 1.0f / 8.0f;
+    const float FAR_SLIDE_STAMINA = 1.0f / 8.0f;
 
     float targetLeanLength = 0.0f;
     float targetSlideLength = 0.0f;
@@ -582,17 +582,6 @@ public class Kaiju : MonoBehaviour
                 return;
             }
 
-            bool wantFarCover = oldJumpTimer >= MOVE_FAR_LENGTH;
-
-            // If there's not enough stamina.
-            float staminaRemaining = stamina.GetValue();
-            if (wantFarCover && staminaRemaining < FAR_SLIDE_STAMINA) {
-                return;
-            }
-            else if (!wantFarCover && staminaRemaining < NEAR_SLIDE_STAMINA) {
-                return;
-            }
-
             bool foundCover = false;
 
             // Transfer desired direction to move direction and take action on it.
@@ -606,6 +595,17 @@ public class Kaiju : MonoBehaviour
                 
             }
             else {
+                
+                bool wantFarCover = oldJumpTimer >= MOVE_FAR_LENGTH;
+
+                // If there's not enough stamina.
+                float staminaRemaining = stamina.GetValue();
+                if (wantFarCover && staminaRemaining < FAR_SLIDE_STAMINA) {
+                    return;
+                }
+                else if (!wantFarCover && staminaRemaining < NEAR_SLIDE_STAMINA) {
+                    return;
+                }
 
                 if (moveDir.x != 0.0f) {
 
