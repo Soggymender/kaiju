@@ -14,6 +14,20 @@ AudioMixerEffectController:
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
+--- !u!244 &-8678005307346460040
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 07318e2b6f012c545900cd61a8fb0c11
+  m_EffectName: Attenuation
+  m_MixLevel: 4cd28d5d30ab939498d85609862a7915
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-8263915769807725196
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -119,6 +133,25 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!243 &-1239663760433927667
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SFX_Kaiju
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 2d81bfa891179fe4c815008baaf1035b
+  m_Children: []
+  m_Volume: c0a07b6ad61218147aeb482991f37daa
+  m_Pitch: b492d7f88c2013a48a523e81c8bc00b7
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -8678005307346460040}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
 --- !u!241 &24100000
 AudioMixerController:
   m_ObjectHideFlags: 0
@@ -144,6 +177,7 @@ AudioMixerController:
     - b2fc9b12a1d70e448af4945655adc8ce
     - 31c1c63e8d13b6844bd76aaa9eb25ac8
     - 83bae4e4e01d815429c86742fe1c0a06
+    - 2d81bfa891179fe4c815008baaf1035b
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -203,6 +237,7 @@ AudioMixerSnapshotController:
     0a87fbe554d3c5949b30a2d173032f58: -7.8940816
     cedc19263a89d0541b9f01525ddc84fd: 0.77
     0c8b8d38518ec4a499ddb505a24d8475: 16130
+    c0a07b6ad61218147aeb482991f37daa: -5.7224774
     f0298fda3e99e9747896773eb13aa5ee: 0.401
     f8ffbb0b8026627438c17211a84caa20: -0.27209988
     a56a57fb3383512478030445a2753483: 87
@@ -370,6 +405,7 @@ AudioMixerGroupController:
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: f759f3af76d4191489d210c9d2d1648f
   m_Children:
+  - {fileID: -1239663760433927667}
   - {fileID: -2361400100481066063}
   - {fileID: -2019246747664837883}
   - {fileID: 8971854332482244549}

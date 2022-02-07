@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Kaiju : MonoBehaviour
 {
@@ -92,9 +93,22 @@ public class Kaiju : MonoBehaviour
 
     Animator animator = null;
 
+    public AudioSource as_Kaiju;
+    public AudioMixer Mixer;
+
+    //Arrays of sound clips for calling randomly
+    public AudioClip[] ac_PeekClips;
+    public AudioClip[] ac_PeekReturnClips;
+    public AudioClip[] ac_SlideChargeClips;
+    public AudioClip[] ac_SlideClips;
+
     // Start is called before the first frame update
     void Start()
     {
+
+        as_Kaiju = gameObject.AddComponent<AudioSource>();
+        
+
         coverManager = FindObjectOfType<CoverManager>();
         if (coverManager == null) {
             throw new System.Exception("Couldn't find CoverManager in scene.");
@@ -633,8 +647,13 @@ public class Kaiju : MonoBehaviour
 
     void UpdateAnimations() {
 
+    }
 
-
-
+    void playRandomSound(AudioClip[] clips, AudioMixer mix, AudioSource as_Source)
+    {
+        int rand = Random.Range(0,clips.Length);
+        as_Source.PlayOneShot(clips[rand], 1); 
+        as_Source.outputAudioMixerGroup = mix.FindMatchingGroups("SFX_Kaiju")[0];
+        
     }
 }
