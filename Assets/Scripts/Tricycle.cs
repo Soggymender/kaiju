@@ -75,12 +75,11 @@ public class Tricycle : MonoBehaviour
         //it will always be playing but the player input inc/dec the volume <-- can be improved later
         if (as_Wheels_Rolling == null)
             as_Wheels_Rolling = gameObject.AddComponent<AudioSource>();
-        as_Wheels_Rolling.clip = ac_RollingLoop;
-        as_Wheels_Rolling.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
-        as_Wheels_Rolling.loop = true;
-        as_Wheels_Rolling.Play();
-
-
+            as_Wheels_Rolling.clip = ac_RollingLoop;
+            as_Wheels_Rolling.outputAudioMixerGroup = MainMixer.FindMatchingGroups("SFX_Kid")[0];
+            as_Wheels_Rolling.loop = true;
+            as_Wheels_Rolling.Play();
+        }
 
         characterController = GetComponent<CharacterController>();
         rotation.y = transform.eulerAngles.y;
