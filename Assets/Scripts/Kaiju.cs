@@ -35,16 +35,15 @@ public class Kaiju : MonoBehaviour
 
     Vector3 slideVelocity;
 
+    public Camera kidCamera = null;
     public KaijuCamera camera = null;
     public Magnifier magnifier = null;
-<<<<<<< Updated upstream
-    
-=======
+
     public Stamina stamina;
     public bool PlayChargeSound = false;
 
+    public Chopper chopper = null;
 
->>>>>>> Stashed changes
     // LEAN LEFT / RIGHT
     bool leftLeanPositionValid = false;
     Vector3 leftLeanPosition;
@@ -67,8 +66,17 @@ public class Kaiju : MonoBehaviour
     public Transform coverOffset = null;
     public GameObject root = null;
 
-    Vector3 lateralOffset; 
-    
+    Vector3 lateralOffset;
+
+    const float NEAR_SLIDE_STAMINA = 1.0f / 8.0f;
+    const float FAR_SLIDE_STAMINA = 1.0f / 8.0f;
+
+    float targetLeanLength = 0.0f;
+    float targetSlideLength = 0.0f;
+
+    const float LEAN_LENGTH = 0.15f;
+    const float NEAR_SLIDE_LENGTH = 0.15f;
+    const float FAR_SLIDE_LENGTH = 0.15f;
     
     const float STAND_TO_LEAN_LENGTH = 0.5f;
     const float LEAN_TO_STAND_LENGTH = 0.5f;
@@ -240,7 +248,7 @@ public class Kaiju : MonoBehaviour
 
 
         // ALWAYS interpolating between current position and possible target position. This covers slide and lean.
-        Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref leanVelocity, 0.25f);
+        Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref leanVelocity, targetLeanLength + targetSlideLength);
 
         // Transform.
         Move(newPosition, targetRotation);
@@ -272,8 +280,9 @@ public class Kaiju : MonoBehaviour
 
     void UpdateLeanAnim() {
 
-        if (coverPoint.coverType == CoverPoint.CoverType.CORNER)
+        if (coverPoint.coverType == CoverPoint.CoverType.CORNER) {
             return;
+        }
 
         animator.SetBool("Lean Left", false);
         animator.SetBool("Lean Right", false);
@@ -305,23 +314,27 @@ public class Kaiju : MonoBehaviour
         // There is no lean control at corners.
         if (coverPoint.coverType == CoverPoint.CoverType.CORNER) {
             camera.SetLeanDirection(KaijuCamera.LeanDirection.NONE);
+            targetLeanLength = 0.0f;
             return;
         }
 
         // Lean left.
         if (desiredDir.x < 0.0f) {
             targetPosition = leftLeanPosition;
+            targetLeanLength = LEAN_LENGTH;
             camera.SetLeanDirection(KaijuCamera.LeanDirection.LEFT);
         }
 
         // Lean right.
         else if (desiredDir.x > 0.0f) {
             targetPosition = rightLeanPosition;
+            targetLeanLength = LEAN_LENGTH;
             camera.SetLeanDirection(KaijuCamera.LeanDirection.RIGHT);
         }
 
         else {
             camera.SetLeanDirection(KaijuCamera.LeanDirection.NONE);
+            targetLeanLength = 0.0f;
         }
     }
 
@@ -330,9 +343,6 @@ public class Kaiju : MonoBehaviour
 
         // Position interpolation.
         Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref slideVelocity, transitionTime);
-
-        // Old, chonky.
-        //Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetCoverPoint.transform.position, ref slideVelocity, 0.5f);////Vector3.Lerp(coverPoint.transform.position, targetCoverPoint.transform.position, transitionTime / transitionLength);
         
         // Angle interpolation.
         Vector3 startAngles = oldCoverPoint.transform.rotation.eulerAngles;
@@ -342,8 +352,6 @@ public class Kaiju : MonoBehaviour
         targetAngles = new Vector3(targetAngles.x, targetAngles.y + coverPoint.headingOffset + 180, targetAngles.z);
         
         targetRotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
-
-        //Move(newPosition, newRotation);
     }
 
     // Move the top level game object.
@@ -368,7 +376,8 @@ public class Kaiju : MonoBehaviour
         if (curPos.y < transform.position.y && yVelocity < 0.0f) {
 
             if (state == State.TAUNT) {
-                state = State.STAND;
+
+                StopTaunt();
             }
 
             curPos.y = transform.position.y;
@@ -477,13 +486,24 @@ public class Kaiju : MonoBehaviour
         state = State.TAUNT;
 
         // Height is built in to this animation.
-        //yVelocity = jumpSpeed;
+        yVelocity = 2.75f;
 
         animator.SetTrigger("Taunt");
         animator.SetBool("Stand", true);
 
         transitionTime = 0.0f;
         transitionLength = 0.0f;
+    }
+
+    void StopTaunt() {
+
+        state = State.STAND;
+
+        // Tell the helicopter.
+        chopper.SetPointOfInterest(coverPoint.transform);
+
+        kidCamera.GetComponent<CameraShake>().shakeDuration = 1.0f;
+        camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
     }
 
     void StartStandToLean() {
@@ -523,10 +543,12 @@ public class Kaiju : MonoBehaviour
         if (far) {
             // Only use the slide animations for far slides.
             // Leans will work for near slides.
-            if (state == State.SLIDE_LEFT)
+            if (state == State.SLIDE_LEFT) {
                 animator.SetTrigger("Slide Right");
-            else if (state == State.SLIDE_RIGHT)
+            }
+            else if (state == State.SLIDE_RIGHT) {
                 animator.SetTrigger("Slide Left");
+            }
             else if (state == State.SLIDE_BACK) {
                 yVelocity = jumpSpeed;
                 animator.SetTrigger("Jump");
@@ -593,12 +615,23 @@ public class Kaiju : MonoBehaviour
                 
             }
             else {
+                
+                bool wantFarCover = oldJumpTimer >= MOVE_FAR_LENGTH;
+
+                // If there's not enough stamina.
+                float staminaRemaining = stamina.GetValue();
+                if (wantFarCover && staminaRemaining < FAR_SLIDE_STAMINA) {
+                    return;
+                }
+                else if (!wantFarCover && staminaRemaining < NEAR_SLIDE_STAMINA) {
+                    return;
+                }
 
                 if (moveDir.x != 0.0f) {
 
                     // Going to try to move to other cover.
 
-                    if (oldJumpTimer >= MOVE_FAR_LENGTH) {
+                    if (wantFarCover) {
 
                         if (moveDir.x < 0.0f)
                             foundCover = MoveToCoverLeft(true);
@@ -609,6 +642,8 @@ public class Kaiju : MonoBehaviour
 
                     if (foundCover) {
                         // Found far cover.
+                        stamina.Use(FAR_SLIDE_STAMINA);
+                        targetSlideLength = FAR_SLIDE_LENGTH;
                     }
                     else {
                         // Look for near cover.
@@ -617,14 +652,22 @@ public class Kaiju : MonoBehaviour
 
                         else if (moveDir.x > 0.0f)
                             foundCover = MoveToCoverRight(false);
+
+                        if (foundCover) {
+
+                            stamina.Use(NEAR_SLIDE_STAMINA);
+                            targetSlideLength = NEAR_SLIDE_LENGTH;
+                        }
                     }
                 }
                 else if (moveDir.y < 0.0f) {
 
-                    if (oldJumpTimer >= MOVE_FAR_LENGTH) {
+                    if (wantFarCover) {
 
                         if (MoveToCoverBack()) {
                             // Found far cover, jump.
+                            stamina.Use(FAR_SLIDE_STAMINA);
+                            targetSlideLength = FAR_SLIDE_LENGTH;
                         }
                     }
                 }
@@ -647,6 +690,8 @@ public class Kaiju : MonoBehaviour
 
     public void SetPlayerControls(bool canMove, PlayerControls newControls) {
         this.canMove = canMove;
+
+        stamina.ForceHide(false);
 
         if (newControls != null)
             controls = newControls;

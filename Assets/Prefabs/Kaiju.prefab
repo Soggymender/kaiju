@@ -395,14 +395,10 @@ MonoBehaviour:
   playSound: 1
   coverOffset: {fileID: 9167692797119831085}
   root: {fileID: 9167692796025928498}
-CharacterController:
   desiredDir: {x: 0, y: 0}
   moveDir: {x: 0, y: 0}
-<<<<<<< Updated upstream
-=======
   as_Kaiju: {fileID: 0}
->>>>>>> Stashed changes
-  Mixer: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
+Mixer: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
   ac_PeekClips:
   - {fileID: 8300000, guid: 0b8cb7411bbd3954ab0c47a0b141b43f, type: 3}
   - {fileID: 8300000, guid: 78c1026eabd2a054b96f025fb3eec82e, type: 3}

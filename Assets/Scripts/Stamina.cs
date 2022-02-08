@@ -5,18 +5,22 @@ using UnityEngine.UI;
 
 public class Stamina : MonoBehaviour {
 
+    public Camera camera;
+    public Transform worldAnchor;
+
     public Image mask;
     public Image image;
 
     bool discharge = false;
-    float depletionLength = 4.0f;
-    float rechargeLength = 2.0f;
+    public float depletionLength = 4.0f;
+    public float rechargeLength = 2.0f;
 
     // Hide if full for > this length of time. Inactive.
     float fullLength = 2.0f;
     float fullTime = 0.0f;
 
     bool forceHide = true;
+    bool forceShow = false;
 
     [Range(0, 1)]
     public float value = 0;
@@ -67,7 +71,16 @@ public class Stamina : MonoBehaviour {
 
         image.fillAmount = value;
         
-        mask.gameObject.SetActive(wantVisible && !forceHide);
+        mask.gameObject.SetActive(forceShow || (wantVisible && !forceHide));
+    }
+
+    void LateUpdate() {
+
+        // Find the position of Kid on the screen.
+        Vector3 screenPos = camera.WorldToScreenPoint(worldAnchor.position);
+
+        screenPos.z = transform.localPosition.z;
+        transform.position = screenPos;
     }
 
     public void SetDischarge(bool discharge) {
@@ -83,8 +96,28 @@ public class Stamina : MonoBehaviour {
         // Try to keep this hidden during sprint -> drift -> jump when it would normally be recharging and visible for a few seconds.
         fullTime = fullLength;
     }
-    
+
+    public void ForceShow(bool show) {
+
+        forceHide = false;
+        forceShow = true;
+
+        fullTime = 0.0f;
+    }
+
     public float GetValue() {
         return value;
+    }
+    
+    public bool Use(float amount) {
+
+        if (value >= amount) {
+
+            value -= amount;
+            fullTime = 0.0f;
+            return true;
+        }
+
+        return false;
     }
 }

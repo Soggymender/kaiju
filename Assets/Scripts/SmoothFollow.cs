@@ -42,7 +42,7 @@ public class SmoothFollow : MonoBehaviour {
         if (!target)
             return;
 
-      //  PanUp();
+        PanUp();
         
         // Calculate the current rotation angles
         float targetHeading = target.eulerAngles.y;
