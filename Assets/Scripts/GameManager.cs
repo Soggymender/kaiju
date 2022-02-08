@@ -44,11 +44,15 @@ public class GameManager : MonoBehaviour
 
     public ScreenManager screenManager;
     public AudioListener audioListener;
+    public GameObject MusicObject;
 
     public AudioClip ac_ready;
     public AudioClip ac_go;
+    public AudioClip ac_RoundEnd;
     public AudioClip ac_airRaid;
+    public AudioClip ac_ChaseSong;
     public AudioSource as_start;
+    public AudioSource as_Music;
     public AudioMixer MixerMaster;
 
     GameState gameState = GameState.NONE;
@@ -57,6 +61,15 @@ public class GameManager : MonoBehaviour
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        as_Music = MusicObject.GetComponent<AudioSource>();
+
+        if(!as_Music.isPlaying)
+        {
+            as_Music.clip = ac_ChaseSong;
+            as_Music.Play();
+            as_Music.outputAudioMixerGroup = MixerMaster.FindMatchingGroups("Music")[0];
+        }
 
         
     }
@@ -376,6 +389,8 @@ public class GameManager : MonoBehaviour
         stateTime = 0.0f;
         stateLength = ROUND_LENGTH;
 
+        PlayStartSound(ac_RoundEnd, MixerMaster, .25f);
+        as_Music.Stop();
         roundUI.SetActive(true);
     }
 
