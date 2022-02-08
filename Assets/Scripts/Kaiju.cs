@@ -37,7 +37,14 @@ public class Kaiju : MonoBehaviour
 
     public KaijuCamera camera = null;
     public Magnifier magnifier = null;
+<<<<<<< Updated upstream
     
+=======
+    public Stamina stamina;
+    public bool PlayChargeSound = false;
+
+
+>>>>>>> Stashed changes
     // LEAN LEFT / RIGHT
     bool leftLeanPositionValid = false;
     Vector3 leftLeanPosition;
@@ -105,8 +112,8 @@ public class Kaiju : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        as_Kaiju = gameObject.AddComponent<AudioSource>();
+        
+        //as_Kaiju = gameObject.AddComponent<AudioSource>();
         
 
         coverManager = FindObjectOfType<CoverManager>();
@@ -275,12 +282,15 @@ public class Kaiju : MonoBehaviour
         if (desiredDir.x < 0.0f) {
             if (state != State.SLIDE_LEFT && state != State.SLIDE_RIGHT)
                 animator.SetBool("Lean Right", true);
+
         }
 
         // Lean right.
         else if (desiredDir.x > 0.0f) {
             if (state != State.SLIDE_LEFT && state != State.SLIDE_RIGHT)
                 animator.SetBool("Lean Left", true);
+                
+
         }
     }
 
@@ -487,6 +497,7 @@ public class Kaiju : MonoBehaviour
     void StartLeanToStand() {
 
         state = State.LEAN_TO_STAND;
+        
 
         transitionTime = 0.0f;
         transitionLength = LEAN_TO_STAND_LENGTH;
