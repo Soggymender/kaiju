@@ -503,7 +503,7 @@ public class Kaiju : MonoBehaviour
         chopper.SetPointOfInterest(coverPoint.transform);
 
         kidCamera.GetComponent<CameraShake>().shakeDuration = 1.0f;
-        camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
+        //camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
     }
 
     void StartStandToLean() {
