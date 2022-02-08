@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     enum GameState {
 
         NONE,
-        WAIT,
+        SELECT,
         READY,
         GO,
         PLAY,
@@ -22,10 +22,21 @@ public class GameManager : MonoBehaviour
     const float GO_LENGTH = 1.0f;
     const float ROUND_LENGTH = 3.0f;
 
+    // Character select.
+    bool debugSplitScreen = true;
+    bool debugSwapCharacters = true;
+
+    bool startSplitScreen = false;
+    bool swapCharacters = false;
+
+    public GameObject selectGUI;
+
+    // Match start sequence.
     public GameObject readyUI;
     public GameObject goUI;
-    public GameObject roundUI;
 
+    // Match end sequence.
+    public GameObject roundUI;
     public DangerZone dangerZone;
 
     float stateTime = 0.0f;
@@ -70,8 +81,6 @@ public class GameManager : MonoBehaviour
             as_Music.Play();
             as_Music.outputAudioMixerGroup = MixerMaster.FindMatchingGroups("Music")[0];
         }
-
-        
     }
 
     void Update() {
@@ -100,7 +109,7 @@ public class GameManager : MonoBehaviour
         bool splitScreen = screenManager.GetSplitScreen();
         
         // Swap avatars or merge split screens.
-        if (Input.GetKeyDown("1")) {
+        if (Input.GetKeyDown("1") && (debugSplitScreen || debugSwapCharacters)) {
 
             if (screenManager.GetSplitScreen()) {
 
@@ -126,7 +135,11 @@ public class GameManager : MonoBehaviour
         }
 
         // Split screens, or swap sides.
-        if (Input.GetKeyDown("2")) {
+        if ((Input.GetKeyDown("2") && (debugSplitScreen || debugSwapCharacters)) || startSplitScreen || swapCharacters) {
+
+            startSplitScreen = false;
+            swapCharacters = false;
+
             if (screenManager.GetSplitScreen()) {
 
                 // Swap
@@ -141,8 +154,10 @@ public class GameManager : MonoBehaviour
                 splitScreen = true;
             }
 
-            kidHasControl = true;
-            kaijuHasControl = true;
+            if (gameState == GameState.PLAY) {
+                kidHasControl = true;
+                kaijuHasControl = true;
+            }
         }
 
         // Game state changes.
@@ -201,84 +216,6 @@ public class GameManager : MonoBehaviour
                 ParentAudioListener(kaijuCam.transform);
             }
         }
-
-
-
-        /*
-        // Merge screens, or swap avatars.
-        if (Input.GetKeyDown("1")) {
-            
-            if (screenManager.GetSplitScreen()) {
-
-                // Merge.
-                if (player1IsKid) {
-                    screenManager.Split(false, kidCam, kaijuCam);
-                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
-                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
-
-                    ParentAudioListener(kidCam.transform);
-                }
-                else {
-                    screenManager.Split(false, kaijuCam, kidCam);
-                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
-                    kid.SetPlayerControls(kidHasControl, rightPlayerControls);
-
-                    ParentAudioListener(kaijuCam.transform);
-                }
-            }
-            else {
-
-                // Swap.
-                if (player1IsKid) {
-                    screenManager.Split(false, kaijuCam, kidCam);
-                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
-                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
-
-                    ParentAudioListener(kaijuCam.transform);
-                }
-                else {
-                    screenManager.Split(false, kidCam, kaijuCam);
-                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
-                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
-
-                    ParentAudioListener(kidCam.transform);
-                }
-            }
-        }
-
-        // Split screens, or swap sides.
-        if (Input.GetKeyDown("2")) {
-            if (screenManager.GetSplitScreen()) {
-                // Swap.
-                if (player1IsKid) {
-                    player1IsKid = false;
-                    screenManager.Split(true, kaijuCam, kidCam);
-                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
-                    kid.SetPlayerControls(kidHasControl, rightPlayerControls);
-                }
-                else {
-                    player1IsKid = true;
-                    screenManager.Split(true, kidCam, kaijuCam);
-                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
-                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
-                }
-            }
-            else {
-                // Split
-
-                if (player1IsKid) {
-                    screenManager.Split(true, kidCam, kaijuCam);
-                    kid.SetPlayerControls(kidHasControl, leftPlayerControls);
-                    kaiju.SetPlayerControls(kaijuHasControl, rightPlayerControls);
-                }
-                else {
-                    screenManager.Split(true, kaijuCam, kidCam);
-                    kaiju.SetPlayerControls(kaijuHasControl, leftPlayerControls);
-                    kid.SetPlayerControls(kidHasControl, rightPlayerControls);
-                }
-            }
-        }
-        */
     }
 
     void ParentAudioListener(Transform parent) {
@@ -297,12 +234,19 @@ public class GameManager : MonoBehaviour
         oldGameState = gameState;
 
         if (gameState == GameState.NONE) {
-            StartWait();
+            StartSelect();
         }
 
-        else if (gameState == GameState.WAIT) {
-            if (UpdateStateTime()) {
-                EndWait();
+        else if (gameState == GameState.SELECT) {
+
+            if (Input.GetKeyDown("a") || Input.GetKeyDown("d")) {
+                swapCharacters = true;
+            }
+
+            if (Input.GetButtonDown(leftPlayerControls.jump)) {
+           
+            //if (UpdateStateTime()) {
+                EndSelect();
                 StartReady();
             }
         }
@@ -349,11 +293,20 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    void StartWait() {
+    void StartSelect() {
 
-        gameState = GameState.WAIT;
+        gameState = GameState.SELECT;
         stateTime = 0.0f;
-        stateLength = WAIT_LENGTH;
+
+        // Set split screen.
+        startSplitScreen = true;
+
+        // Show the "select character" UI
+        selectGUI.SetActive(true);
+
+        // Turn off the ability to select characters and change split screen on the fly.
+        debugSplitScreen = false;
+        debugSwapCharacters = false;
     }
 
     void StartReady() {
@@ -394,8 +347,9 @@ public class GameManager : MonoBehaviour
         roundUI.SetActive(true);
     }
 
-    void EndWait() {
+    void EndSelect() {
 
+        selectGUI.SetActive(false);
     }
 
     void EndReady() {
