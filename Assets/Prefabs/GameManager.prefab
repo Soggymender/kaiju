@@ -47,6 +47,7 @@ MonoBehaviour:
   horizontal: lhorizontal
   vertical: lvertical
   jump: ljump
+  sprint: 
 --- !u!1 &774033352878808787
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,11 +87,11 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 774033352878808787}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 574135292397072367, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 6ca46f9f3b61a4b40834202932a3b250, type: 3}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -273,6 +274,7 @@ MonoBehaviour:
   horizontal: rhorizontal
   vertical: rvertical
   jump: rjump
+  sprint: 
 --- !u!1 &7788275059644482434
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,10 +337,14 @@ MonoBehaviour:
   rightPlayerControls: {fileID: 1971357816246239945}
   screenManager: {fileID: 1884641350}
   audioListener: {fileID: 0}
+  MusicObject: {fileID: 774033352878808787}
   ac_ready: {fileID: 8300000, guid: b8574d31ea25b984aab6adec2e6d9168, type: 3}
   ac_go: {fileID: 8300000, guid: e437905140645e64cb04de52e9abdb0b, type: 3}
+  ac_RoundEnd: {fileID: 8300000, guid: 14327688ce1055447b9320982d03ff7c, type: 3}
   ac_airRaid: {fileID: 8300000, guid: a1364aeec59e1b945bf9850809a2d90a, type: 3}
+  ac_ChaseSong: {fileID: 8300000, guid: 6ca46f9f3b61a4b40834202932a3b250, type: 3}
   as_start: {fileID: 0}
+  as_Music: {fileID: 0}
   MixerMaster: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
 --- !u!114 &7788275059644482433
 MonoBehaviour:

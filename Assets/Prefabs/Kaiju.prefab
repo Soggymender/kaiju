@@ -400,11 +400,11 @@ MonoBehaviour:
   desiredDir: {x: 0, y: 0}
   moveDir: {x: 0, y: 0}
   as_Kaiju: {fileID: 0}
-  Mixer: {fileID: 0}
-  ac_PeekClips: []
-  ac_PeekReturnClips: []
-  ac_SlideChargeClips: []
-  ac_SlideClips: []
+  Mixer: {fileID: 24100000, guid: d51163bb9c183ae4aae8eb39cd48d80f, type: 2}
+  ac_SlideChargeClips:
+  - {fileID: 8300000, guid: a45120f5c1f8e7546880841cc46c98bd, type: 3}
+  - {fileID: 8300000, guid: 6fc44dceb4e3dc047877055f2873c7b7, type: 3}
+  - {fileID: 8300000, guid: a7b71137098c92a48ac788c4cb411d8e, type: 3}
 --- !u!1001 &190433284
 PrefabInstance:
   m_ObjectHideFlags: 0

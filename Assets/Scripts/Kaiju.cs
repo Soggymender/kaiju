@@ -112,16 +112,14 @@ public class Kaiju : MonoBehaviour
     public AudioMixer Mixer;
 
     //Arrays of sound clips for calling randomly
-    public AudioClip[] ac_PeekClips;
-    public AudioClip[] ac_PeekReturnClips;
     public AudioClip[] ac_SlideChargeClips;
-    public AudioClip[] ac_SlideClips;
+
 
     // Start is called before the first frame update
     void Start()
     {
         
-        //as_Kaiju = gameObject.AddComponent<AudioSource>();
+        as_Kaiju = gameObject.AddComponent<AudioSource>();
         
 
         coverManager = FindObjectOfType<CoverManager>();
@@ -564,7 +562,7 @@ public class Kaiju : MonoBehaviour
 
         // Press Jump.
         if (Input.GetButtonDown(controls.jump)) {
-                
+      
             // Start press/hold for clockwise / counter clockwise close cover change or far lateral change.
             jumpTimer = 0.0f;
             
@@ -572,6 +570,13 @@ public class Kaiju : MonoBehaviour
             scaleLength = JUMP_SCALE_LENGTH;
             scaleStart = root.transform.localScale.y;
             scaleTarget = JUMP_SCALE;
+
+            //checks if i should play the charge sound, then sets it to false so it only plays once
+            if(PlayChargeSound)
+            {
+             playRandomSound(ac_SlideChargeClips, Mixer, as_Kaiju, .5f);
+             PlayChargeSound = false;              
+            }
         }
         
         // Hold Jump.
@@ -597,6 +602,13 @@ public class Kaiju : MonoBehaviour
 
             // Jump scale is the visual feedback response for input.
             EndJumpScale();
+
+            //checks if it should stop sfx posted by the player holding down space bar
+            if(!PlayChargeSound)
+            {
+             as_Kaiju.Stop();
+             PlayChargeSound = true;              
+            }
 
             if (state != State.STAND) {
                 return;
@@ -705,10 +717,10 @@ public class Kaiju : MonoBehaviour
 
     }
 
-    void playRandomSound(AudioClip[] clips, AudioMixer mix, AudioSource as_Source)
+    void playRandomSound(AudioClip[] clips, AudioMixer mix, AudioSource as_Source, float volume)
     {
         int rand = Random.Range(0,clips.Length);
-        as_Source.PlayOneShot(clips[rand], 1); 
+        as_Source.PlayOneShot(clips[rand], volume); 
         as_Source.outputAudioMixerGroup = mix.FindMatchingGroups("SFX_Kaiju")[0];
         
     }
