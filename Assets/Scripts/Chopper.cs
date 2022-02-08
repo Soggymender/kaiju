@@ -14,7 +14,7 @@ public class Chopper : MonoBehaviour {
     State state = State.NONE;
     Vector3 initialTargetDir;
 
-    Transform poi;
+    Vector3 poi;
 
 
     Vector3 targetDir;
@@ -25,7 +25,7 @@ public class Chopper : MonoBehaviour {
     void Start()
     {
         initialTargetDir = transform.forward;
-        poi.position = Vector3.zero;
+        poi = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -48,7 +48,7 @@ public class Chopper : MonoBehaviour {
 
         state = State.FACE_POI;
 
-        targetDir = poi.position - transform.position;
+        targetDir = poi - transform.position;
     }
 
     void UpdateFacePoi() {
@@ -64,7 +64,7 @@ public class Chopper : MonoBehaviour {
 
     public void SetPointOfInterest(Transform poi) {
         
-        this.poi = poi;
+        this.poi = poi.position;
 
         if (poi.position != Vector3.zero) {
             StartFacePoi();
