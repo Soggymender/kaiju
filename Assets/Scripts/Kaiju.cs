@@ -253,8 +253,7 @@ public class Kaiju : MonoBehaviour
 
         // Mesh.
         MoveRoot();
-
-
+        
         UpdateAnimations();
 
         // Apply any active scale lerp.

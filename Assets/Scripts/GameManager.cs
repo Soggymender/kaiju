@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     bool swapCharacters = false;
 
     public GameObject selectGUI;
+    public GameObject controlDiagramGUI;
 
     // Match start sequence.
     public GameObject readyUI;
@@ -303,6 +304,7 @@ public class GameManager : MonoBehaviour
 
         // Show the "select character" UI
         selectGUI.SetActive(true);
+        controlDiagramGUI.SetActive(true);
 
         // Turn off the ability to select characters and change split screen on the fly.
         debugSplitScreen = false;
@@ -350,6 +352,7 @@ public class GameManager : MonoBehaviour
     void EndSelect() {
 
         selectGUI.SetActive(false);
+        controlDiagramGUI.SetActive(false);
     }
 
     void EndReady() {
