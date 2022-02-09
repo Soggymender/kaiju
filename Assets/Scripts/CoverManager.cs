@@ -11,7 +11,8 @@ CoverManager is set to run early so that Kaiju can pull a random cover point in 
 public class CoverManager : MonoBehaviour
 {
     CoverPoint[] coverPoints = null;
-    
+
+
     void Start()
     {
      
@@ -30,10 +31,7 @@ public class CoverManager : MonoBehaviour
         for (int i = 0; i < coverPoints.Length; i++) {
 
             coverPoints[i].id = i;
-        }
-
-        // TODO: Seed properly after development.
-        Random.InitState(42);
+        } 
     }
 
     public CoverPoint GetRandomCoverPoint() {

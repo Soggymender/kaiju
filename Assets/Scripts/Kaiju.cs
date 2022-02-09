@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class Kaiju : MonoBehaviour
-{
+public class Kaiju : MonoBehaviour {
     enum State {
 
         NONE,
@@ -77,7 +76,7 @@ public class Kaiju : MonoBehaviour
     const float LEAN_LENGTH = 0.15f;
     const float NEAR_SLIDE_LENGTH = 0.15f;
     const float FAR_SLIDE_LENGTH = 0.15f;
-    
+
     const float STAND_TO_LEAN_LENGTH = 0.5f;
     const float LEAN_TO_STAND_LENGTH = 0.5f;
     const float JUMP_LENGTH = 1.85f;
@@ -116,11 +115,10 @@ public class Kaiju : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
-    {
-        
+    void Start() {
+
         as_Kaiju = gameObject.AddComponent<AudioSource>();
-        
+
 
         coverManager = FindObjectOfType<CoverManager>();
         if (coverManager == null) {
@@ -132,15 +130,11 @@ public class Kaiju : MonoBehaviour
             throw new System.Exception("Couldn't find CoverManager in scene.");
         }
 
-        coverPoint = coverManager.GetRandomCoverPoint();
-        oldCoverPoint = coverPoint;
-
-        WarpToCoverPoint(coverPoint);
+        WarpToRandomCoverPoint();
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         UpdateMonsterVision();
 
         // Update desired direction and jump hold / release.
@@ -185,7 +179,7 @@ public class Kaiju : MonoBehaviour
 
         // Update Lean
         else if (state == State.LEAN) {
-            
+
         }
 
         // Update slide
@@ -196,7 +190,7 @@ public class Kaiju : MonoBehaviour
 
             if (UpdateTransitionTime(State.STAND)) {
                 //coverPoint = targetCoverPoint;
-                
+
                 targetCoverPoint = null;
 
                 // If this is a corner, keep going.
@@ -218,7 +212,7 @@ public class Kaiju : MonoBehaviour
 
         // Update Stand to Lean
         else if (state == State.STAND_TO_LEAN) {
-            
+
             /* Keeping this in case we decide to step out of cover at the end of a round.
             if (transitionTime >= transitionLength * 0.5f && Input.GetMouseButtonDown(1)) {
                 queuedAction = true;
@@ -232,7 +226,7 @@ public class Kaiju : MonoBehaviour
 
         // Update Lean to Stand
         else if (state == State.LEAN_TO_STAND) {
-            
+
             /* Keeping this in case we decide to step out of cover at the end of a round.
             if (transitionTime >= transitionLength * 0.5f && Input.GetMouseButtonDown(1)) {
                 queuedAction = true;
@@ -253,7 +247,7 @@ public class Kaiju : MonoBehaviour
 
         // Mesh.
         MoveRoot();
-        
+
         UpdateAnimations();
 
         // Apply any active scale lerp.
@@ -262,7 +256,7 @@ public class Kaiju : MonoBehaviour
             float yScale = Mathf.Lerp(scaleStart, scaleTarget, scaleTime / scaleLength);
 
             root.transform.localScale = new Vector3(1.0f, yScale, 1.0f);
-            
+
         }
     }
 
@@ -295,7 +289,7 @@ public class Kaiju : MonoBehaviour
         else if (desiredDir.x > 0.0f) {
             if (state != State.SLIDE_LEFT && state != State.SLIDE_RIGHT)
                 animator.SetBool("Lean Left", true);
-                
+
 
         }
     }
@@ -340,14 +334,14 @@ public class Kaiju : MonoBehaviour
 
         // Position interpolation.
         Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref slideVelocity, transitionTime);
-        
+
         // Angle interpolation.
         Vector3 startAngles = oldCoverPoint.transform.rotation.eulerAngles;
         startAngles = new Vector3(startAngles.x, startAngles.y + oldCoverPoint.headingOffset + 180, startAngles.z);
 
         Vector3 targetAngles = coverPoint.transform.rotation.eulerAngles;
         targetAngles = new Vector3(targetAngles.x, targetAngles.y + coverPoint.headingOffset + 180, targetAngles.z);
-        
+
         targetRotation = Quaternion.Slerp(Quaternion.Euler(startAngles), Quaternion.Euler(targetAngles), transitionTime / transitionLength);
     }
 
@@ -419,6 +413,38 @@ public class Kaiju : MonoBehaviour
         rightLeanPosition = coverPoint.transform.position + (toRight * 0.1f);
 
         //camera.SetLeanPositions(leftCoverPoint.transform.position - coverPoint.transform.position, rightCoverPoint.transform.position - coverPoint.transform.position);
+    }
+
+    void WarpToRandomCoverPoint() {
+
+        CoverPoint searchResult;
+
+        // Search for random cover points until we find one that is not visible from the tricycle start location.
+        while (true) {
+
+            searchResult = coverManager.GetRandomCoverPoint();
+
+            if (searchResult.hiddenFromStart)
+                break;
+
+            //Vector3 startPos = /*kidCamera.transform.position*/ new Vector3(72.0f, 10.0f, 28.0f);// + (Vector3.up * 10.0f);
+            //Vector3 endPos   = searchResult.transform.position + (Vector3.up * 10.0f);
+
+            //RaycastHit hit;
+            //Vector3 dirTmp = endPos - startPos;
+            
+            // Don't collide with characters.
+           // LayerMask characterLM = LayerMask.NameToLayer("Character");
+
+            //if (Physics.Raycast(startPos, dirTmp, out hit, dirTmp.magnitude)) {//, ~(1 << characterLM))) {
+            //    break;
+            //}
+        }
+
+        coverPoint = searchResult;
+        oldCoverPoint = coverPoint;
+
+        WarpToCoverPoint(coverPoint);
     }
 
     void WarpToCoverPoint(CoverPoint newCoverPoint) {
