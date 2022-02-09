@@ -35,6 +35,7 @@ public class Kaiju : MonoBehaviour {
     Vector3 slideVelocity;
 
     public Camera kidCamera = null;
+    public CameraShake kidCameraShake = null;
     public KaijuCamera camera = null;
     public Magnifier magnifier = null;
 
@@ -525,8 +526,8 @@ public class Kaiju : MonoBehaviour {
         // Tell the helicopter.
         chopper.SetPointOfInterest(coverPoint.transform);
 
-        kidCamera.GetComponent<CameraShake>().shakeDuration = 1.0f;
-        //camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
+        kidCameraShake.shakeDuration = 1.0f;
+        camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
     }
 
     void StartStandToLean() {
