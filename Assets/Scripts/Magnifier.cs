@@ -37,7 +37,7 @@ public class Magnifier : MonoBehaviour
         // Find the position of Kid on the screen.
         Vector3 screenPos = farCam.WorldToScreenPoint(kidTrans.position);
 
-        if (screenPos.z > 0 && screenPos.x > 0 && screenPos.x < farCam.pixelWidth && screenPos.y > 0 && screenPos.y < farCam.pixelHeight) {
+        if (screenPos.z > 0 && screenPos.x > farCam.pixelRect.min.x && screenPos.x < farCam.pixelRect.max.x && screenPos.y > farCam.pixelRect.min.y && screenPos.y < farCam.pixelRect.max.y) {
             kidVisible = true;    
         }
 
