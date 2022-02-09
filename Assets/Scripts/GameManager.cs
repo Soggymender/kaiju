@@ -31,6 +31,10 @@ public class GameManager : MonoBehaviour
 
     public GameObject selectGUI;
     public GameObject controlDiagramGUI;
+    public GameObject lSprintGUI;
+    public GameObject lLookGUI;
+    public GameObject rSprintGUI;
+    public GameObject rLookGUI;
 
     // Match start sequence.
     public GameObject readyUI;
@@ -148,6 +152,8 @@ public class GameManager : MonoBehaviour
                 splitScreen = true;
 
                 player1IsKid = !player1IsKid;
+
+                UpdateControlDiagram();
             }
             else {
                 // Split
@@ -306,9 +312,32 @@ public class GameManager : MonoBehaviour
         selectGUI.SetActive(true);
         controlDiagramGUI.SetActive(true);
 
+        // Kid is left, kaiju is right, so hide character specific controls.
+        UpdateControlDiagram();
+
         // Turn off the ability to select characters and change split screen on the fly.
         debugSplitScreen = false;
         debugSwapCharacters = false;
+    }
+
+    // Show / hide character specific controls. Helps to communicate that mouse needs to be passed back and forth during split screen if kid is not on left.
+    void UpdateControlDiagram() {
+
+        if (player1IsKid) {
+
+            lSprintGUI.SetActive(true);
+            lLookGUI.SetActive(false);
+
+            rSprintGUI.SetActive(false);
+            rLookGUI.SetActive(true);
+        }
+        else {
+            lSprintGUI.SetActive(false);
+            lLookGUI.SetActive(true);
+
+            rSprintGUI.SetActive(true);
+            rLookGUI.SetActive(false);
+        }
     }
 
     void StartReady() {
