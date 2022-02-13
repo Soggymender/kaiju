@@ -78,6 +78,7 @@ public class Magnifier : MonoBehaviour
 
         images.SetActive(show && kidVisible);
 
+        screenPos.y += GetComponent<RectTransform>().rect.height / 4.0f * 3.0f;
         screenPos.z = transform.localPosition.z;
         transform.position = screenPos;
 
