@@ -30,11 +30,8 @@ public class GameManager : MonoBehaviour
     bool swapCharacters = false;
 
     public GameObject selectGUI;
-    public GameObject controlDiagramGUI;
-    public GameObject lSprintGUI;
-    public GameObject lLookGUI;
-    public GameObject rSprintGUI;
-    public GameObject rLookGUI;
+    public ControlDiagram leftControlDiagram;
+    public ControlDiagram rightControlDiagram;
 
     // Match start sequence.
     public GameObject readyUI;
@@ -310,7 +307,6 @@ public class GameManager : MonoBehaviour
 
         // Show the "select character" UI
         selectGUI.SetActive(true);
-        controlDiagramGUI.SetActive(true);
 
         // Kid is left, kaiju is right, so hide character specific controls.
         UpdateControlDiagram();
@@ -325,18 +321,18 @@ public class GameManager : MonoBehaviour
 
         if (player1IsKid) {
 
-            lSprintGUI.SetActive(true);
-            lLookGUI.SetActive(false);
+            leftControlDiagram.ShowKidControls();
+            rightControlDiagram.ShowKaijuControls();
 
-            rSprintGUI.SetActive(false);
-            rLookGUI.SetActive(true);
+            // Kaiju shows extra control context during gameplay.
+            kaiju.controlDiagram = rightControlDiagram;
         }
         else {
-            lSprintGUI.SetActive(false);
-            lLookGUI.SetActive(true);
+            leftControlDiagram.ShowKaijuControls();
+            rightControlDiagram.ShowKidControls();
 
-            rSprintGUI.SetActive(true);
-            rLookGUI.SetActive(false);
+            // Kaiju shows extra control context during gameplay.
+            kaiju.controlDiagram = leftControlDiagram;
         }
     }
 
@@ -365,6 +361,9 @@ public class GameManager : MonoBehaviour
         gameState = GameState.PLAY;
         stateTime = 0.0f;
         stateLength = 0.0f;
+
+        leftControlDiagram.StartGoalTextDecay();
+        rightControlDiagram.StartGoalTextDecay();
     }
 
     void StartRound() {
@@ -381,7 +380,7 @@ public class GameManager : MonoBehaviour
     void EndSelect() {
 
         selectGUI.SetActive(false);
-        controlDiagramGUI.SetActive(false);
+        //controlDiagramGUI.SetActive(false);
     }
 
     void EndReady() {

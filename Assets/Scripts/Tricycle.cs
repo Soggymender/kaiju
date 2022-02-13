@@ -202,7 +202,7 @@ public class Tricycle : MonoBehaviour
 
             targetSpeed = curSpeed;
        
-        } else if (!canMove || !Input.GetButton(controls.vertical)) {
+        } else if (!canMove || (!Input.GetButton(controls.vertical) && !sprinting)) {
 
             targetSpeed = 0.0f;
             acceleration = DECCELERATION;
@@ -211,7 +211,11 @@ public class Tricycle : MonoBehaviour
             if (canMove) {
 
                 // Accelerate toward target speed.
-                targetSpeed = maxSpeed * Input.GetAxis(controls.vertical);
+                if (sprinting)
+                    targetSpeed = maxSpeed;
+                else 
+                    targetSpeed = maxSpeed * Input.GetAxis(controls.vertical);
+
                 acceleration = ACCELERATION;
             }
         }
@@ -272,7 +276,7 @@ public class Tricycle : MonoBehaviour
             requireSprintRepress = false;
 
         // Holding sprint, and accelerating forward.
-        if (!drifting && Input.GetButton(controls.sprint) && !requireSprintRepress && Input.GetButton(controls.vertical) && Input.GetAxis(controls.vertical) > 0.0f) {
+        if (!drifting && Input.GetButton(controls.sprint) && !requireSprintRepress) {// && Input.GetButton(controls.vertical) && Input.GetAxis(controls.vertical) > 0.0f) {
 
             float staminaValue = stamina.GetValue();
 

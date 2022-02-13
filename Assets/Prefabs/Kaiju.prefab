@@ -255,6 +255,7 @@ GameObject:
   - component: {fileID: 9167692797028782828}
   - component: {fileID: 9167692797028782831}
   - component: {fileID: 9167692797028782829}
+  - component: {fileID: 970301202}
   m_Layer: 7
   m_Name: Kaiju Camera
   m_TagString: MainCamera
@@ -340,6 +341,22 @@ MonoBehaviour:
   rotationDamping: 3
   lookSpeed: 2
   lookXLimit: 60
+--- !u!114 &970301202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9167692797028782816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97c860af2b0b5314c955f865afcbfaa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camTransform: {fileID: 9167692797028782828}
+  shakeDuration: 0
+  shakeAmount: 0.7
+  decreaseFactor: 1
 --- !u!1 &9167692797119831084
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,7 +438,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controls: {fileID: 0}
+  controlDiagram: {fileID: 0}
+  coverArrows: {fileID: 0}
   kidCamera: {fileID: 0}
+  kidCameraShake: {fileID: 0}
   camera: {fileID: 9167692797028782829}
   magnifier: {fileID: 0}
   stamina: {fileID: 0}

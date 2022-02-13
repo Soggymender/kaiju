@@ -15,12 +15,11 @@ public class Kaiju : MonoBehaviour {
         SLIDE_BACK,
         LEAP,
         TAUNT,
-
-        STAND_TO_LEAN,
-        LEAN_TO_STAND
     }
 
     public PlayerControls controls;
+    public ControlDiagram controlDiagram;
+    public CoverArrows coverArrows;
 
     bool canMove = false;
 
@@ -90,14 +89,6 @@ public class Kaiju : MonoBehaviour {
     float jumpTimer = 0.0f;
     const float MOVE_FAR_LENGTH = 0.5f;
 
-    // Scale lerp stuff.
-    const float JUMP_SCALE_LENGTH = 0.5f;
-    const float JUMP_SCALE = 0.95f;
-    float scaleTime = 0.0f;
-    float scaleLength = 0.0f;
-    float scaleStart = 1.0f;
-    float scaleTarget = 1.0f;
-
     //Vector3 targetOffset;
 
     State state = State.STAND;
@@ -145,9 +136,11 @@ public class Kaiju : MonoBehaviour {
             // Latest direction press is the valid one.
             if (Input.GetButton(controls.horizontal)) {
                 desiredDir.x = Input.GetAxis(controls.horizontal);
-                desiredDir.y = 0.0f;
-            } else if (Input.GetButton(controls.vertical)) {
-                desiredDir.x = 0.0f;
+                //desiredDir.y = 0.0f;
+            }
+
+            if (Input.GetButton(controls.vertical)) {
+                //desiredDir.x = 0.0f;
                 desiredDir.y = Input.GetAxis(controls.vertical);
             }
 
@@ -158,12 +151,23 @@ public class Kaiju : MonoBehaviour {
             if (Input.GetButtonUp(controls.vertical) && !Input.GetButton(controls.vertical))
                 desiredDir.y = 0.0f;
 
-            UpdateCoverPointHold();
-            UpdateCoverPointRelease();
+            UpdateCoverChange();
+
+            if (state == State.STAND && targetLeanLength == 0.0f) {
+                if (Input.GetButtonDown(controls.sprint)) {
+                    
+                    // If on directional input, don't change cover.
+                    if (Mathf.Approximately(moveDir.magnitude, 0.0f)) {
+                        
+                        // Jump in place. Taunt, destabalize kid?
+                        StartTaunt();
+                    }
+                }
+            }
         }
 
-
-
+        UpdateCoverArrows();
+        
         // Update Stand
         if (state == State.STAND) {
             // While standing the transform is always some interpolation between the current cover point and the one to the left or right, depending on input.
@@ -210,36 +214,7 @@ public class Kaiju : MonoBehaviour {
                 moveDir.x = 0.0f;
             }
         }
-
-        // Update Stand to Lean
-        else if (state == State.STAND_TO_LEAN) {
-
-            /* Keeping this in case we decide to step out of cover at the end of a round.
-            if (transitionTime >= transitionLength * 0.5f && Input.GetMouseButtonDown(1)) {
-                queuedAction = true;
-            }
-
-            root.transform.position = Vector3.Lerp(transform.position, coverOffset.position, transitionTime / transitionLength);
-
-            UpdateTransitionTime(State.LEAN);
-            */
-        }
-
-        // Update Lean to Stand
-        else if (state == State.LEAN_TO_STAND) {
-
-            /* Keeping this in case we decide to step out of cover at the end of a round.
-            if (transitionTime >= transitionLength * 0.5f && Input.GetMouseButtonDown(1)) {
-                queuedAction = true;
-            }
-
-            root.transform.position = Vector3.Lerp(coverOffset.position, transform.position, transitionTime / transitionLength);
-
-            UpdateTransitionTime(State.STAND);
-            */
-        }
-
-
+        
         // ALWAYS interpolating between current position and possible target position. This covers slide and lean.
         Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref leanVelocity, targetLeanLength + targetSlideLength);
 
@@ -250,14 +225,37 @@ public class Kaiju : MonoBehaviour {
         MoveRoot();
 
         UpdateAnimations();
+    }
 
-        // Apply any active scale lerp.
-        if (scaleLength != 0) {
+    void UpdateCoverArrows() {
 
-            float yScale = Mathf.Lerp(scaleStart, scaleTarget, scaleTime / scaleLength);
+        if (state != State.STAND) {
+            coverArrows.HideArrows();
+            return;
+        }
 
-            root.transform.localScale = new Vector3(1.0f, yScale, 1.0f);
 
+        if (desiredDir.x == 0.0f) {
+
+            if (desiredDir.y < 0.0f)
+                coverArrows.ShowBackArrow();
+            else
+                coverArrows.HideArrows();
+        }
+
+        else if (desiredDir.x > 0.0f) {
+
+            if (desiredDir.y > 0.0f)
+                coverArrows.ShowRightForwardArrow();
+            else
+                coverArrows.ShowRightArrow();
+        }
+
+        else if (desiredDir.x < 0.0f) {
+            if (desiredDir.y > 0.0f)
+                coverArrows.ShowLeftForwardArrow();
+            else
+                coverArrows.ShowLeftArrow();
         }
     }
 
@@ -414,6 +412,11 @@ public class Kaiju : MonoBehaviour {
         rightLeanPosition = coverPoint.transform.position + (toRight * 0.1f);
 
         //camera.SetLeanPositions(leftCoverPoint.transform.position - coverPoint.transform.position, rightCoverPoint.transform.position - coverPoint.transform.position);
+        
+        coverArrows.SetRightArrowTransforms(rightCoverPoint.transform.position, coverPoint.transform.rotation * Quaternion.Euler(0, 180.0f, 0));
+        coverArrows.SetLeftArrowTransforms(leftCoverPoint.transform.position, coverPoint.transform.rotation * Quaternion.Euler(0, 180.0f, 0));
+        coverArrows.SetBackArrowTransforms(coverPoint.transform.position, coverPoint.transform.rotation * Quaternion.Euler(0, -90.0f, 0));
+
     }
 
     void WarpToRandomCoverPoint() {
@@ -529,24 +532,7 @@ public class Kaiju : MonoBehaviour {
         kidCameraShake.shakeDuration = 1.0f;
         camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
     }
-
-    void StartStandToLean() {
-
-        state = State.STAND_TO_LEAN;
-
-        transitionTime = 0.0f;
-        transitionLength = STAND_TO_LEAN_LENGTH;
-    }
-
-    void StartLeanToStand() {
-
-        state = State.LEAN_TO_STAND;
-        
-
-        transitionTime = 0.0f;
-        transitionLength = LEAN_TO_STAND_LENGTH;
-    }
-
+    
     void StartSlide(bool far, State newState) {
 
         state = newState;
@@ -580,60 +566,24 @@ public class Kaiju : MonoBehaviour {
         }
     }
 
-    // You can start "queing up" a cover change while transitioning cover, so process down and hold events.
-    void UpdateCoverPointHold() {
-
-        if (!canMove)
-            return;
-
-        // Press Jump.
-        if (Input.GetButtonDown(controls.jump)) {
-      
-            // Start press/hold for clockwise / counter clockwise close cover change or far lateral change.
-            jumpTimer = 0.0f;
-            
-            scaleTime = 0.0f;
-            scaleLength = JUMP_SCALE_LENGTH;
-            scaleStart = root.transform.localScale.y;
-            scaleTarget = JUMP_SCALE;
-
-            //checks if i should play the charge sound, then sets it to false so it only plays once
-            if(PlayChargeSound)
-            {
-             playRandomSound(ac_SlideChargeClips, Mixer, as_Kaiju, .5f);
-             PlayChargeSound = false;              
-            }
-        }
-        
-        // Hold Jump.
-        if (Input.GetButton(controls.jump)) {
-            jumpTimer += Time.deltaTime;
-
-            scaleTime += Time.deltaTime;
-            if (scaleTime >= scaleLength)
-                scaleTime = scaleLength;
-        }
-    }
-
     // You can change cover once fully in cover so process up events.
-    void UpdateCoverPointRelease() {
+    void UpdateCoverChange() {
 
-        if (!canMove)
+        if (!canMove) {
             return;
+        }
 
-        // Release jump
-        if (Input.GetButtonUp(controls.jump)) {
-
-            float oldJumpTimer = jumpTimer;
-
-            // Jump scale is the visual feedback response for input.
-            EndJumpScale();
-
+        // Press forward means we want near cover, otherwise it's far.
+        bool wantFarCover = desiredDir.y <= 0.0f;
+        
+        // Press jump to change cover
+        if (Input.GetButtonDown(controls.jump)) {
+            
             //checks if it should stop sfx posted by the player holding down space bar
-            if(!PlayChargeSound)
-            {
-             as_Kaiju.Stop();
-             PlayChargeSound = true;              
+            if(!PlayChargeSound) {
+
+                as_Kaiju.Stop();
+                PlayChargeSound = true;              
             }
 
             if (state != State.STAND) {
@@ -646,67 +596,56 @@ public class Kaiju : MonoBehaviour {
             // moveDir can get cleared out after a move, desiredDir is maintained to indicate input based intention.
             moveDir = desiredDir;
 
-            // If on directional input, don't change cover.
-            if (Mathf.Approximately(moveDir.magnitude, 0.0f)) {
-                // Jump in place. Taunt, destabalize kid?
-                StartTaunt();
-                
+            // If there's not enough stamina.
+            float staminaRemaining = stamina.GetValue();
+            if (wantFarCover && staminaRemaining < FAR_SLIDE_STAMINA) {
+                return;
             }
-            else {
-                
-                bool wantFarCover = oldJumpTimer >= MOVE_FAR_LENGTH;
+            else if (!wantFarCover && staminaRemaining < NEAR_SLIDE_STAMINA) {
+                return;
+            }
 
-                // If there's not enough stamina.
-                float staminaRemaining = stamina.GetValue();
-                if (wantFarCover && staminaRemaining < FAR_SLIDE_STAMINA) {
-                    return;
+            if (moveDir.x != 0.0f) {
+
+                // Going to try to move to other cover.
+
+                if (wantFarCover) {
+
+                    if (moveDir.x < 0.0f)
+                        foundCover = MoveToCoverLeft(true);
+
+                    else if (moveDir.x > 0.0f)
+                        foundCover = MoveToCoverRight(true);
                 }
-                else if (!wantFarCover && staminaRemaining < NEAR_SLIDE_STAMINA) {
-                    return;
+
+                if (foundCover) {
+                    // Found far cover.
+                    stamina.Use(FAR_SLIDE_STAMINA);
+                    targetSlideLength = FAR_SLIDE_LENGTH;
                 }
+                else {
+                    // Look for near cover.
+                    if (moveDir.x < 0.0f)
+                        foundCover = MoveToCoverLeft(false);
 
-                if (moveDir.x != 0.0f) {
-
-                    // Going to try to move to other cover.
-
-                    if (wantFarCover) {
-
-                        if (moveDir.x < 0.0f)
-                            foundCover = MoveToCoverLeft(true);
-
-                        else if (moveDir.x > 0.0f)
-                            foundCover = MoveToCoverRight(true);
-                    }
+                    else if (moveDir.x > 0.0f)
+                        foundCover = MoveToCoverRight(false);
 
                     if (foundCover) {
-                        // Found far cover.
-                        stamina.Use(FAR_SLIDE_STAMINA);
-                        targetSlideLength = FAR_SLIDE_LENGTH;
-                    }
-                    else {
-                        // Look for near cover.
-                        if (moveDir.x < 0.0f)
-                            foundCover = MoveToCoverLeft(false);
 
-                        else if (moveDir.x > 0.0f)
-                            foundCover = MoveToCoverRight(false);
-
-                        if (foundCover) {
-
-                            stamina.Use(NEAR_SLIDE_STAMINA);
-                            targetSlideLength = NEAR_SLIDE_LENGTH;
-                        }
+                        stamina.Use(NEAR_SLIDE_STAMINA);
+                        targetSlideLength = NEAR_SLIDE_LENGTH;
                     }
                 }
-                else if (moveDir.y < 0.0f) {
+            }
+            else if (moveDir.y < 0.0f) {
 
-                    if (wantFarCover) {
+                if (wantFarCover) {
 
-                        if (MoveToCoverBack()) {
-                            // Found far cover, jump.
-                            stamina.Use(FAR_SLIDE_STAMINA);
-                            targetSlideLength = FAR_SLIDE_LENGTH;
-                        }
+                    if (MoveToCoverBack()) {
+                        // Found far cover, jump.
+                        stamina.Use(FAR_SLIDE_STAMINA);
+                        targetSlideLength = FAR_SLIDE_LENGTH;
                     }
                 }
             }
@@ -715,15 +654,6 @@ public class Kaiju : MonoBehaviour {
             if (!foundCover)
                 moveDir.x = 0.0f;
         }
-    }
-
-    void EndJumpScale() {
-
-        jumpTimer = 0.0f;
-
-        scaleLength = 0.0f;
-        scaleTime = 0.0f;
-        root.transform.localScale = new Vector3(1, 1, 1);
     }
 
     public void SetPlayerControls(bool canMove, PlayerControls newControls) {
