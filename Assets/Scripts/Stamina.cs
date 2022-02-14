@@ -7,13 +7,15 @@ public class Stamina : MonoBehaviour {
 
     public Camera camera;
     public Transform worldAnchor;
+    public Vector3 anchorOffset;
 
     public Image mask;
     public Image image;
-
+    
     bool discharge = false;
     public float depletionLength = 4.0f;
     public float rechargeLength = 2.0f;
+    float overrideRechargeLength = 0.0f;
 
     // Hide if full for > this length of time. Inactive.
     float fullLength = 2.0f;
@@ -56,7 +58,11 @@ public class Stamina : MonoBehaviour {
 
                 wantVisible = true;
 
-                value += Time.deltaTime / rechargeLength;
+                if (overrideRechargeLength > 0.0f)
+                    value += Time.deltaTime / overrideRechargeLength;
+                else
+                    value += Time.deltaTime / rechargeLength;
+
                 if (value >= 1.0f) {
                     value = 1.0f;
                     fullTime = 0.0f;
@@ -77,7 +83,7 @@ public class Stamina : MonoBehaviour {
     void LateUpdate() {
 
         // Find the position of Kid on the screen.
-        Vector3 screenPos = camera.WorldToScreenPoint(worldAnchor.position);
+        Vector3 screenPos = camera.WorldToScreenPoint(worldAnchor.position + anchorOffset);
 
         screenPos.z = transform.localPosition.z;
         transform.position = screenPos;
@@ -119,5 +125,13 @@ public class Stamina : MonoBehaviour {
         }
 
         return false;
+    }
+
+    public void OverrideRechargeLength(float length) {
+        overrideRechargeLength = length;
+    }
+
+    public void ClearOverride() {
+        overrideRechargeLength = 0.0f;
     }
 }

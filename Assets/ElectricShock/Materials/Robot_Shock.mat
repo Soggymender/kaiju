@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: kaiju_rig_crab
+  m_Name: Robot_Shock
   m_Shader: {fileID: 4800000, guid: 87e79362f0c4a164a9eed772769868a3, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 1698b9a1da65b2a47b01aa95bce7f773, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 439acc2ceae365b47a788df272927da6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 018a1e80854b7ab4aa347573433f2140, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -55,7 +55,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -64,28 +63,29 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
-    - _IsShock: 0
+    - _IsShock: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineFactor: 0
+    - _OutlineFactor: 0.032
     - _Parallax: 0.02
-    - _RimPower: 3
-    - _ShakePowerX: 10
-    - _ShakePowerY: 2
-    - _ShakeSpeedX: 60
-    - _ShakeSpeedY: 60
-    - _ShockLightSpeed: 0
+    - _RimPower: -1.24
+    - _ShakePower: 1
+    - _ShakePowerX: 63
+    - _ShakePowerY: 63.8
+    - _ShakeSpeed: 1
+    - _ShakeSpeedX: 50
+    - _ShakeSpeedY: 80
+    - _ShockLightSpeed: 30
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _WaveSpeed: 10
+    - _WaveSpeed: 188
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineCol: {r: 0.99, g: 0.99, b: 0.46, a: 1}
-    - _RimColor: {r: 1, g: 0.99, b: 0.392, a: 1}
-  m_BuildTextureStacks: []
+    - _OutlineCol: {r: 0.6179246, g: 0.9179144, b: 1, a: 1}
+    - _RimColor: {r: 0.5801887, g: 0.92607194, b: 1, a: 1}

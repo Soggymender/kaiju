@@ -8,6 +8,7 @@ public class Kaiju : MonoBehaviour {
 
         NONE,
         STAND,
+        CHARGE,
         LEAN,
         SLIDE_NEAR,
         SLIDE_LEFT,
@@ -20,6 +21,11 @@ public class Kaiju : MonoBehaviour {
     public PlayerControls controls;
     public ControlDiagram controlDiagram;
     public CoverArrows coverArrows;
+    public Charge charge;
+
+    public Transform headTransform;
+    public Transform leftEyeTransform;
+    public Transform rightEyeTransform;
 
     bool canMove = false;
 
@@ -94,6 +100,7 @@ public class Kaiju : MonoBehaviour {
     State state = State.STAND;
 
     CoverManager coverManager = null;
+    PowerSourceManager powerSourceManager = null;
 
     bool monsterVision = true;
 
@@ -115,6 +122,11 @@ public class Kaiju : MonoBehaviour {
         coverManager = FindObjectOfType<CoverManager>();
         if (coverManager == null) {
             throw new System.Exception("Couldn't find CoverManager in scene.");
+        }
+
+        powerSourceManager = FindObjectOfType<PowerSourceManager>();
+        if (powerSourceManager == null) {
+            throw new System.Exception("Couldn't find PowerSourceManager in scene.");
         }
 
         animator = GetComponentInChildren<Animator>();
@@ -151,6 +163,7 @@ public class Kaiju : MonoBehaviour {
             if (Input.GetButtonUp(controls.vertical) && !Input.GetButton(controls.vertical))
                 desiredDir.y = 0.0f;
 
+            UpdateCharge();
             UpdateCoverChange();
 
             if (state == State.STAND && targetLeanLength == 0.0f) {
@@ -563,6 +576,29 @@ public class Kaiju : MonoBehaviour {
                 yVelocity = jumpSpeed;
                 animator.SetTrigger("Jump");
             }
+        }
+    }
+
+    void UpdateCharge() {
+
+        if (state == State.STAND && desiredDir.x == 0.0f && desiredDir.y > 0.0f) {
+
+            // Start?
+            if (Input.GetButtonDown(controls.vertical)) {
+                PowerSource powerSource = powerSourceManager.FindNearbyPowerSource(transform.position);
+
+                if (powerSource == null)
+                    return;
+
+                charge.StartCharge(powerSource);
+
+                state = State.CHARGE;
+            }
+        } else if (state == State.CHARGE && Input.GetButtonUp(controls.vertical)) {
+
+            state = State.STAND;
+
+            charge.StopCharge();
         }
     }
 
