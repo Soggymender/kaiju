@@ -590,16 +590,27 @@ public class Kaiju : MonoBehaviour {
                 if (powerSource == null)
                     return;
 
-                charge.StartCharge(powerSource);
-
-                state = State.CHARGE;
+                if (charge.StartCharge(powerSource))
+                    state = State.CHARGE;
             }
-        } else if (state == State.CHARGE && Input.GetButtonUp(controls.vertical)) {
+        }
+        else if (state == State.CHARGE) {
+
+            if (charge.Complete()) {
+                charge.StopCharge();
+                state = State.STAND;
+            }
+        }
+
+
+        /*
+            else if (state == State.CHARGE && Input.GetButtonUp(controls.vertical)) {
 
             state = State.STAND;
 
             charge.StopCharge();
         }
+        */
     }
 
     // You can change cover once fully in cover so process up events.

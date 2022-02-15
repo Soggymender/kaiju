@@ -14,6 +14,8 @@ public class Charge : MonoBehaviour
     PowerSource powerSource;
     public ElectricShock_LightningLineDemo spark;
 
+    bool charging = false;
+
     void Start()
     {
         spark.gameObject.SetActive(false);
@@ -24,7 +26,11 @@ public class Charge : MonoBehaviour
         
     }
 
-    public void StartCharge(PowerSource mast) {
+    public bool StartCharge(PowerSource mast) {
+
+        if (kaijuStamina.GetValue() == 1.0f) {
+            return false;
+        }
 
         this.powerSource = mast;
 
@@ -39,6 +45,10 @@ public class Charge : MonoBehaviour
         // Show Kaiju's stamina guage and set it to fill.
         kaijuStamina.ForceShow(true);
         kaijuStamina.OverrideRechargeLength(5.0f);
+
+        charging = true;
+
+        return true;
     }
 
     public void StopCharge() {
@@ -50,6 +60,21 @@ public class Charge : MonoBehaviour
 
         kaijuStamina.ForceShow(false);
         kaijuStamina.ClearOverride();
+
+        powerSource.discharged = true;
+
+        charging = false;
+    }
+
+    public bool Complete() {
+
+        if (!charging)
+            return true;
+
+        if (kaijuStamina.GetValue() == 1.0f)
+            return true;
+
+        return false;
     }
 
     private void OnDestroy() {
