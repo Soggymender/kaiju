@@ -28,7 +28,7 @@ public class Tricycle : MonoBehaviour
     const float SPRINT_SPEED = 13.5f;//11.5f;
     const float SPEED_BOOST_LENGTH = 10.0f;
     public float maxSpeed = MAX_SPEED;
-    public float speedBoost = 0.0f;
+  //  public float speedBoost = 0.0f;
 
 
     const float ACCELERATION = MAX_SPEED * 2.0f;
@@ -40,7 +40,7 @@ public class Tricycle : MonoBehaviour
     public bool isGrounded = false;
 
     //float speedBoostLength = 1.0f;
-    float speedBoostTime = 0.0f;
+//    float speedBoostTime = 0.0f;
 
     float timeSinceLastDrift = 0.0f;
     float driftTime = 0.0f;
@@ -143,14 +143,14 @@ public class Tricycle : MonoBehaviour
 
                 moveDirection = forward * curSpeed;
 
-                if (speedBoostTime > 0.0f) {
-
-                    speedBoost = 0.25f;
-                    moveDirection += forward * curSpeed * speedBoost;
-                    speedBoostTime -= Time.deltaTime;
-                }
-                else
-                    speedBoost = 0.0f;
+             //   if (speedBoostTime > 0.0f) {
+             //
+//                    speedBoost = 0.25f;
+               //     moveDirection += forward * curSpeed * speedBoost;
+                //    speedBoostTime -= Time.deltaTime;
+               // }
+               // else
+               //     speedBoost = 0.0f;
             }
 
             // This is a stupid gravity hack to keep isGrounded true.
@@ -214,7 +214,7 @@ public class Tricycle : MonoBehaviour
             acceleration = DECCELERATION;
 
             // As soon as you let off forward, you lose any speed boost.
-            speedBoostTime = 0.0f;
+          //  speedBoostTime = 0.0f;
         }
         else {
             if (canMove) {
@@ -364,7 +364,8 @@ public class Tricycle : MonoBehaviour
 
         timeSinceLastDrift = 0.0f;
 
-        stamina.ForceHide(true);
+        //stamina.ForceHide(true);
+        stamina.rechargeLength = 4.0f;
     }
 
     void StopDrifting(bool speedBoost) {
@@ -372,7 +373,7 @@ public class Tricycle : MonoBehaviour
         drifting = false;
         timeSinceLastDrift = 0.0f;
 
-        if (speedBoost) {
+/*        if (speedBoost) {
             // Grant speed boost.
             speedBoostTime = driftTime;
             if (speedBoostTime > SPEED_BOOST_LENGTH)
@@ -381,10 +382,12 @@ public class Tricycle : MonoBehaviour
         else {
             speedBoostTime = 0.0f;
         }
-        
+  */      
         // If they've been holding sprint, ignore it.
         requireSprintRepress = true;
-        stamina.ForceHide(false);
+        //stamina.ForceHide(false);
+
+        stamina.rechargeLength = 8.0f;
     }
 
     void FixedUpdate() {
@@ -410,6 +413,10 @@ public class Tricycle : MonoBehaviour
 
         if (newControls != null)
             controls = newControls;
+
+        if (canMove) {
+            stamina.ForceHide(false);
+        }
     }
         void playRandomJump(AudioClip[] clips, AudioMixer mix, AudioSource as_JumpSource)
     {

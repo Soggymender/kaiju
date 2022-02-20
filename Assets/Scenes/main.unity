@@ -953,7 +953,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0.36399436, y: 14.4655, z: -20.097706}
-  - {x: -0.029302366, y: 14.44036, z: -19.25226}
+  - {x: -0.70205635, y: 15.04598, z: -20.316849}
   - {x: -1.3700056, y: 15.5345, z: -19.649706}
   m_Parameters:
     serializedVersion: 3
@@ -2355,7 +2355,7 @@ MonoBehaviour:
   mask: {fileID: 541025463}
   image: {fileID: 782679654}
   depletionLength: 4
-  rechargeLength: 2
+  rechargeLength: 8
   value: 0
 --- !u!1 &1417310458
 GameObject:
