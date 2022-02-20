@@ -24,9 +24,12 @@ public class Tricycle : MonoBehaviour
     public Stamina stamina;
 
     const float JUMP_TURN_SPEED = 4.5f;
-    const float MAX_SPEED = 9.0f;
-    const float SPRINT_SPEED = 11.5f;
+    const float MAX_SPEED = 10.0f;
+    const float SPRINT_SPEED = 13.5f;//11.5f;
+    const float SPEED_BOOST_LENGTH = 10.0f;
     public float maxSpeed = MAX_SPEED;
+    public float speedBoost = 0.0f;
+
 
     const float ACCELERATION = MAX_SPEED * 2.0f;
     const float DECCELERATION = MAX_SPEED / 2.0f;
@@ -142,9 +145,12 @@ public class Tricycle : MonoBehaviour
 
                 if (speedBoostTime > 0.0f) {
 
-                    moveDirection += forward * curSpeed * 0.25f;
+                    speedBoost = 0.25f;
+                    moveDirection += forward * curSpeed * speedBoost;
                     speedBoostTime -= Time.deltaTime;
                 }
+                else
+                    speedBoost = 0.0f;
             }
 
             // This is a stupid gravity hack to keep isGrounded true.
@@ -177,7 +183,7 @@ public class Tricycle : MonoBehaviour
             // Choose effective turn.
             float effectiveTurn = curTurn;
             if (drifting) {
-                effectiveTurn = curTurn * 0.25f;
+                effectiveTurn = curTurn * 0.33f;// 0.25f;
             }
 
             if (effectiveSpeed != 0) {
@@ -206,6 +212,9 @@ public class Tricycle : MonoBehaviour
 
             targetSpeed = 0.0f;
             acceleration = DECCELERATION;
+
+            // As soon as you let off forward, you lose any speed boost.
+            speedBoostTime = 0.0f;
         }
         else {
             if (canMove) {
@@ -366,8 +375,8 @@ public class Tricycle : MonoBehaviour
         if (speedBoost) {
             // Grant speed boost.
             speedBoostTime = driftTime;
-            if (speedBoostTime > 3.0f)
-                speedBoostTime = 3.0f;
+            if (speedBoostTime > SPEED_BOOST_LENGTH)
+                speedBoostTime = SPEED_BOOST_LENGTH;
         }
         else {
             speedBoostTime = 0.0f;
