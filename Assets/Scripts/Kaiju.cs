@@ -214,10 +214,10 @@ public class Kaiju : MonoBehaviour {
                 // If this is a corner, keep going.
                 if (coverPoint.coverType == CoverPoint.CoverType.CORNER) {
                     if (moveDir.x < 0) {
-                        MoveToCoverLeft(false);
+                        MoveToCoverLeft(false, false);
                     }
                     else if (moveDir.x > 0) {
-                        MoveToCoverRight(false);
+                        MoveToCoverRight(false, false);
                     }
                 }
                 else {
@@ -479,7 +479,7 @@ public class Kaiju : MonoBehaviour {
         CalculateLeanPoints();
     }
 
-    bool MoveToCoverLeft(bool far) {
+    bool MoveToCoverLeft(bool far, bool doAnimation) {
 
         CoverPoint candidateCoverPoint = coverManager.FindLeftCover(coverPoint, far);
         if (candidateCoverPoint == null)
@@ -489,12 +489,12 @@ public class Kaiju : MonoBehaviour {
         coverPoint = candidateCoverPoint;
         CalculateLeanPoints();
         
-        StartSlide(far, far ? State.SLIDE_LEFT : State.SLIDE_NEAR);
+        StartSlide(far, far ? State.SLIDE_LEFT : State.SLIDE_NEAR, doAnimation);
 
         return true;
     }
 
-    bool MoveToCoverRight(bool far) {
+    bool MoveToCoverRight(bool far, bool doAnimation) {
 
         CoverPoint candidateCoverPoint = coverManager.FindRightCover(coverPoint, far);
         if (candidateCoverPoint == null)
@@ -504,7 +504,7 @@ public class Kaiju : MonoBehaviour {
         coverPoint = candidateCoverPoint;
         CalculateLeanPoints();
         
-        StartSlide(far, far ? State.SLIDE_RIGHT : State.SLIDE_NEAR);
+        StartSlide(far, far ? State.SLIDE_RIGHT : State.SLIDE_NEAR, doAnimation);
         return true;
     }
 
@@ -518,7 +518,7 @@ public class Kaiju : MonoBehaviour {
         coverPoint = candidateCoverPoint;
         CalculateLeanPoints();
         
-        StartSlide(true, State.SLIDE_BACK);
+        StartSlide(true, State.SLIDE_BACK, true);
         return true;
     }
 
@@ -547,7 +547,7 @@ public class Kaiju : MonoBehaviour {
         camera.GetComponent<CameraShake>().shakeDuration = 1.0f;
     }
     
-    void StartSlide(bool far, State newState) {
+    void StartSlide(bool far, State newState, bool doAnimation) {
 
         state = newState;
 
@@ -559,6 +559,9 @@ public class Kaiju : MonoBehaviour {
         else {
             transitionLength = SLIDE_LENGTH;
         }
+
+        if (!doAnimation)
+            return;
 
         animator.SetBool("Lean Left", false);
         animator.SetBool("Lean Right", false);
@@ -576,6 +579,15 @@ public class Kaiju : MonoBehaviour {
             else if (state == State.SLIDE_BACK) {
                 yVelocity = 2.75f;// jumpSpeed;
                 animator.SetTrigger("Jump");
+            }
+        }
+        else {
+
+            if (state == State.SLIDE_NEAR && moveDir.x > 0) {
+                animator.SetTrigger("Corner Left");
+            }
+            else if (state == State.SLIDE_NEAR && moveDir.x < 0) {
+                animator.SetTrigger("Corner Right");
             }
         }
     }
@@ -650,10 +662,10 @@ public class Kaiju : MonoBehaviour {
                 if (wantFarCover) {
 
                     if (moveDir.x < 0.0f)
-                        foundCover = MoveToCoverLeft(true);
+                        foundCover = MoveToCoverLeft(true, true);
 
                     else if (moveDir.x > 0.0f)
-                        foundCover = MoveToCoverRight(true);
+                        foundCover = MoveToCoverRight(true, true);
                 }
 
                 if (foundCover) {
@@ -664,10 +676,10 @@ public class Kaiju : MonoBehaviour {
                 else {
                     // Look for near cover.
                     if (moveDir.x < 0.0f)
-                        foundCover = MoveToCoverLeft(false);
+                        foundCover = MoveToCoverLeft(false, true);
 
                     else if (moveDir.x > 0.0f)
-                        foundCover = MoveToCoverRight(false);
+                        foundCover = MoveToCoverRight(false, true);
 
                     if (foundCover) {
 
