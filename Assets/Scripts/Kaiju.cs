@@ -225,6 +225,7 @@ public class Kaiju : MonoBehaviour {
                 }
 
                 moveDir.x = 0.0f;
+                moveDir.y = 0.0f;
             }
         }
         
@@ -573,7 +574,7 @@ public class Kaiju : MonoBehaviour {
                 animator.SetTrigger("Slide Left");
             }
             else if (state == State.SLIDE_BACK) {
-                yVelocity = jumpSpeed;
+                yVelocity = 2.75f;// jumpSpeed;
                 animator.SetTrigger("Jump");
             }
         }
